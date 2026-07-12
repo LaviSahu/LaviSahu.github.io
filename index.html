@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lavi Sahu</title>
+  <meta name="description" content="Director, Technology Consulting at EY India LLP. Supply chain practitioner, traveler, reader, gamer." />
+  <meta property="og:title" content="Lavi Sahu" />
+  <meta property="og:description" content="Director, Technology Consulting — EY India LLP" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://lavisahu.github.io" />
+
+  <!-- Fraunces (display italic serif) · Inter (sans) · DM Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,300;1,9..144,400&family=Inter:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+
+    /* ─────────────────────────────────────────────────────
+       1. DESIGN TOKENS — Ghibli-warm palette, Japanese ma
+       ───────────────────────────────────────────────────── */
+    :root {
+      /* Ghibli light */
+      --cream:      #f3eddf;  /* Totoro cream */
+      --paper:      #faf7ee;  /* card surfaces  */
+      --ink:        #2b2a26;  /* sootsprite ink — soft, not #000 */
+      --ink-2:      #6b6660;
+      --ink-3:      #9c958a;
+      --rule:       rgba(43,42,38,0.09);
+
+      /* Accents — used sparingly */
+      --terracotta: #c97b5e;  /* Howl rooftop — soft, not harsh */
+      --sage:       #a8b5a0;  /* forest sage */
+      --mustard:    #c8a040;  /* squiggle underline */
+
+      /* Type */
+      --serif: 'Fraunces', Georgia, serif;
+      --sans:  'Inter', system-ui, sans-serif;
+      --mono:  'DM Mono', ui-monospace, monospace;
+
+      /* Spacing */
+      --max-w:  1100px;
+      --prose:  600px;
+      --px:     clamp(24px, 5.5vw, 72px);
+    }
+
+    /* Ghibli night — same warmth, darker hour */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --cream:      #1c1814;
+        --paper:      #252018;
+        --ink:        #ede4d2;
+        --ink-2:      #a89e8c;
+        --ink-3:      #6e6557;
+        --rule:       rgba(237,228,210,0.09);
+        --terracotta: #d68868;
+        --sage:       #8e9c86;
+        --mustard:    #d0a848;
+      }
+    }
+
+    /* ─────────────────────────────────────────────────────
+       2. RESET
+       ───────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.78;
+      letter-spacing: 0.01em;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    /* cursor: none only if JS enables custom cursor */
+    .js-cursor * { cursor: none !important; }
+
+    a { color: inherit; text-decoration: none; }
+    ::selection { background: var(--terracotta); color: #f3eddf; }
+
+    /* ─────────────────────────────────────────────────────
+       3. PREMIUM FEATURE — paper grain overlay
+       ───────────────────────────────────────────────────── */
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 800;
+      opacity: 0.042;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
+      mix-blend-mode: multiply;
+    }
+
+    /* ─────────────────────────────────────────────────────
+       4. PREMIUM FEATURE — custom cursor companion
+       ───────────────────────────────────────────────────── */
+    .cursor {
+      display: none;
+    }
+
+    @media (hover: hover) {
+      .cursor {
+        display: block;
+        position: fixed;
+        top: 0; left: 0;
+        width: 10px; height: 10px;
+        margin: -5px 0 0 -5px;
+        border-radius: 50%;
+        background: var(--sage);
+        pointer-events: none;
+        z-index: 9999;
+        opacity: 0.8;
+        transition:
+          width   220ms ease,
+          height  220ms ease,
+          margin  220ms ease,
+          opacity 220ms ease,
+          background 220ms ease;
+        will-change: transform;
+      }
+      .cursor.is-hover {
+        width: 28px; height: 28px;
+        margin: -14px 0 0 -14px;
+        opacity: 0.32;
+        background: var(--terracotta);
+      }
+    }
+
+    /* ─────────────────────────────────────────────────────
+       5. PREMIUM FEATURE — section index (right rail)
+       ───────────────────────────────────────────────────── */
+    .s-nav { display: none; }
+
+    @media (min-width: 1060px) {
+      .s-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+        position: fixed;
+        right: clamp(24px, 3.5vw, 56px);
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0;
+        transition: opacity 500ms ease;
+        pointer-events: none;
+        z-index: 60;
+      }
+      .s-nav.visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .sn-item {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 3px;
+        text-decoration: none;
+      }
+      .sn-num {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        color: var(--ink-3);
+        transition: color 250ms;
+      }
+      .sn-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        opacity: 0;
+        transform: translateX(6px);
+        transition: opacity 220ms ease, transform 220ms ease, color 250ms;
+      }
+      .sn-item:hover .sn-label,
+      .sn-item.active .sn-label {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      .sn-item.active .sn-num { color: var(--terracotta); }
+      .sn-item.active .sn-label { color: var(--terracotta); }
+    }
+
+    /* ─────────────────────────────────────────────────────
+       6. PREMIUM FEATURE — scroll fade-and-rise
+       ───────────────────────────────────────────────────── */
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal {
+        opacity: 0;
+        transform: translateY(18px);
+        transition:
+          opacity   900ms cubic-bezier(.2,.7,.2,1),
+          transform 900ms cubic-bezier(.2,.7,.2,1);
+      }
+      .reveal.in-view { opacity: 1; transform: translateY(0); }
+      .d1 { transition-delay: 110ms; }
+      .d2 { transition-delay: 240ms; }
+      .d3 { transition-delay: 370ms; }
+      .d4 { transition-delay: 480ms; }
+    }
+
+    /* ─────────────────────────────────────────────────────
+       7. PREMIUM FEATURE — hand-drawn squiggle underline
+       ───────────────────────────────────────────────────── */
+    .s-title {
+      position: relative;
+      display: inline-block;
+    }
+    .squiggle {
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 100%;
+      height: 7px;
+      overflow: visible;
+    }
+    .squiggle path {
+      stroke: var(--mustard);
+      stroke-width: 1.5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 220;
+      stroke-dashoffset: 220;
+    }
+    /* Draw on scroll-in */
+    @media (prefers-reduced-motion: no-preference) {
+      .in-view .squiggle path {
+        transition: stroke-dashoffset 1.3s cubic-bezier(.2,.7,.2,1) 500ms;
+        stroke-dashoffset: 0;
+      }
+    }
+    /* Visible immediately if reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .squiggle path { stroke-dashoffset: 0; }
+    }
+
+    /* ─────────────────────────────────────────────────────
+       8. LAYOUT
+       ───────────────────────────────────────────────────── */
+    .wrap {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding-left: var(--px);
+      padding-right: var(--px);
+    }
+
+    /* ─────────────────────────────────────────────────────
+       9. TOP NAV (header element to avoid selector conflict)
+       ───────────────────────────────────────────────────── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--cream);
+    }
+    header .wrap {
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-id {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      color: var(--ink-3);
+    }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 28px;
+    }
+    .nav-links a {
+      font-size: 13px;
+      letter-spacing: 0.03em;
+      color: var(--ink-2);
+      transition: color 200ms;
+    }
+    .nav-links a:hover { color: var(--terracotta); }
+
+    /* ─────────────────────────────────────────────────────
+       10. HERO — generous ma (negative space)
+       ───────────────────────────────────────────────────── */
+    .s-hero {
+      padding-top: clamp(88px, 14vw, 140px);
+      padding-bottom: clamp(88px, 14vw, 140px);
+    }
+    .hero-loc {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 36px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .hero-loc::before {
+      content: '';
+      width: 22px; height: 1px;
+      background: var(--terracotta);
+      flex-shrink: 0;
+    }
+    h1 {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(54px, 10.5vw, 92px);
+      line-height: 1.01;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 22px;
+    }
+    .hero-role {
+      font-size: 12.5px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 44px;
+    }
+    .hero-bio {
+      font-size: 17px;
+      line-height: 1.82;
+      color: var(--ink);
+      max-width: 500px;
+      opacity: 0.86;
+    }
+    .hero-bio em {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 1.055em;
+      opacity: 1;
+    }
+
+    /* ─────────────────────────────────────────────────────
+       11. SECTION SHELL
+       ───────────────────────────────────────────────────── */
+    .section {
+      padding: clamp(68px, 9vw, 108px) 0;
+      border-top: 1px solid var(--rule);
+    }
+    .s-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 48px;
+    }
+    .s-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--terracotta);
+    }
+
+    /* ─────────────────────────────────────────────────────
+       12. WORK SECTION
+       ───────────────────────────────────────────────────── */
+    .work-body {
+      font-size: 15.5px;
+      line-height: 1.82;
+      color: var(--ink);
+      max-width: var(--prose);
+      opacity: 0.88;
+      margin-bottom: 44px;
+    }
+    /* Sage pull quote */
+    .pullquote {
+      border-left: 2px solid var(--sage);
+      padding-left: 30px;
+      margin: 0 0 44px;
+      max-width: 520px;
+    }
+    .pullquote p {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(20px, 3vw, 25px);
+      line-height: 1.46;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+    }
+    /* Terracotta chips */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      color: var(--terracotta);
+      border: 1px solid rgba(201,123,94,0.28);
+      padding: 5px 14px;
+      border-radius: 100px;
+      transition: background 200ms, color 200ms, border-color 200ms;
+    }
+    .chip:hover {
+      background: var(--terracotta);
+      color: var(--cream);
+      border-color: var(--terracotta);
+    }
+
+    /* ─────────────────────────────────────────────────────
+       13. OUTSIDE WORK — generous vertical rhythm
+       ───────────────────────────────────────────────────── */
+    .interests {
+      display: flex;
+      flex-direction: column;
+      gap: 52px;
+      max-width: var(--prose);
+    }
+    .i-cat {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 14px;
+    }
+    .i-lead {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(18px, 2.6vw, 22px);
+      line-height: 1.44;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      margin-bottom: 13px;
+    }
+    .i-body {
+      font-size: 14px;
+      line-height: 1.80;
+      letter-spacing: 0.01em;
+      color: var(--ink-2);
+    }
+
+    /* ─────────────────────────────────────────────────────
+       14. BACKGROUND
+       ───────────────────────────────────────────────────── */
+    .bg-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 44px 64px;
+      max-width: var(--prose);
+      margin-bottom: 52px;
+    }
+    @media (max-width: 560px) {
+      .bg-grid { grid-template-columns: 1fr; gap: 36px; }
+    }
+    .bg-meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 10px;
+    }
+    .bg-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1.4;
+      margin-bottom: 3px;
+    }
+    .bg-sub {
+      font-size: 13px;
+      line-height: 1.68;
+      color: var(--ink-2);
+    }
+    .creds-meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      margin-bottom: 18px;
+    }
+    .creds-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: var(--prose);
+    }
+    .creds-list li {
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--ink-2);
+      padding-left: 18px;
+      position: relative;
+    }
+    .creds-list li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--sage);
+    }
+    .langs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 22px;
+    }
+    .langs span { font-size: 13px; color: var(--ink-2); }
+    .langs strong { font-weight: 500; color: var(--ink); }
+
+    /* ─────────────────────────────────────────────────────
+       15. FOOTER
+       ───────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--rule);
+      padding: clamp(44px, 6vw, 68px) 0;
+    }
+    footer .wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .footer-note {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.10em;
+      color: var(--ink-3);
+    }
+    .footer-links {
+      list-style: none;
+      display: flex;
+      gap: 24px;
+    }
+    .footer-links a {
+      font-size: 13px;
+      letter-spacing: 0.02em;
+      color: var(--ink-2);
+      border-bottom: 1px solid transparent;
+      padding-bottom: 1px;
+      transition: color 200ms, border-color 200ms;
+    }
+    .footer-links a:hover { color: var(--terracotta); border-color: var(--terracotta); }
+
+    @media (max-width: 480px) {
+      footer .wrap { flex-direction: column; align-items: flex-start; }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- ① Paper grain ──────────────────────────────────────── -->
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- ② Custom cursor ────────────────────────────────────── -->
+  <div class="cursor" id="cursor" aria-hidden="true"></div>
+
+  <!-- ③ Section index — right rail ───────────────────────── -->
+  <nav class="s-nav" id="s-nav" aria-label="Page sections">
+    <a class="sn-item" href="#s-work" data-target="s-work">
+      <span class="sn-num">01</span>
+      <span class="sn-label">Work</span>
+    </a>
+    <a class="sn-item" href="#s-eng" data-target="s-eng">
+      <span class="sn-num">02</span>
+      <span class="sn-label">Engagements</span>
+    </a>
+    <a class="sn-item" href="#s-outside" data-target="s-outside">
+      <span class="sn-num">03</span>
+      <span class="sn-label">Outside</span>
+    </a>
+    <a class="sn-item" href="#s-bg" data-target="s-bg">
+      <span class="sn-num">04</span>
+      <span class="sn-label">Background</span>
+    </a>
+  </nav>
+
+  <!-- Top nav ────────────────────────────────────────────── -->
+  <header>
+    <div class="wrap">
+      <span class="nav-id">lavisahu.github.io</span>
+      <ul class="nav-links">
+        <li><a href="https://www.linkedin.com/in/lavi-sahu-6b075023" target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href="mailto:lavi.nitie@gmail.com">Email</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- ──────────── HERO ────────────────────────────────────
+       Japanese ma: enormous padding, generous negative space
+       Name is the only big thing. Everything else is quiet.
+       ─────────────────────────────────────────────────────── -->
+  <section class="s-hero" id="s-hero">
+    <div class="wrap">
+      <p class="hero-loc reveal">Bangalore &middot; India</p>
+      <h1 class="reveal d1">Lavi Sahu</h1>
+      <p class="hero-role reveal d2">Director, Technology Consulting &mdash; EY India LLP &middot; 14 years</p>
+      <p class="hero-bio reveal d3">
+        I've been in supply chain long enough to know that
+        <em>the hardest part of any transformation is never the technology.</em>
+        Large implementations, real problems, multiple industries — that's most of my working life.
+        Outside that: I travel as much as I can, take my parents somewhere new every year,
+        lose track of time over board games, and still load up CS or AoE when the evening allows.
+      </p>
+    </div>
+  </section>
+
+  <!-- ──────────── 01 — THE WORK ──────────────────────────── -->
+  <section class="section" id="s-work">
+    <div class="wrap">
+
+      <div class="s-eyebrow reveal">
+        <span class="s-num">01</span>
+        <span class="s-title">
+          The Work
+          <svg class="squiggle" viewBox="0 0 90 7" aria-hidden="true" preserveAspectRatio="none">
+            <path d="M0,3.5 C7,1 14,6 21,3.5 C28,1 35,6 42,3.5 C49,1 56,6 63,3.5 C70,1 77,6 84,3.5 C87,2 89,3 90,3.5"/>
+          </svg>
+        </span>
+      </div>
+
+      <p class="work-body reveal d1">
+        Fourteen years of supply chain consulting means I've seen most of what can go right and wrong
+        in a large implementation. My work lives at the intersection of advanced planning platforms,
+        S&OP design, inventory optimisation, and AI in planning &mdash; usually in pharma, FMCG,
+        utilities, or energy. At EY I lead technology engagements focused on making platforms actually
+        work in practice, long after the consultants have left.
+      </p>
+
+      <blockquote class="pullquote reveal d2">
+        <p>The platform is rarely the problem. The question is always whether the organisation is ready to use it.</p>
+      </blockquote>
+
+      <div class="chips reveal d3">
+        <span class="chip">SAP IBP</span>
+        <span class="chip">OMP</span>
+        <span class="chip">o9 Solutions</span>
+        <span class="chip">Kinaxis RapidResponse</span>
+        <span class="chip">Demand Planning</span>
+        <span class="chip">S&OP Design</span>
+        <span class="chip">Inventory Optimisation</span>
+        <span class="chip">Digital Supply Chain Twins</span>
+        <span class="chip">Agentic AI in Planning</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ──────────── 02 — SELECTED ENGAGEMENTS ─────────────── -->
+  <section class="section" id="s-eng">
+    <div class="wrap">
+
+      <div class="s-eyebrow reveal">
+        <span class="s-num">02</span>
+        <span class="s-title">
+          Selected Engagements
+          <svg class="squiggle" viewBox="0 0 150 7" aria-hidden="true" preserveAspectRatio="none">
+            <path d="M0,3.5 C10,1 20,6 30,3.5 C40,1 50,6 60,3.5 C70,1 80,6 90,3.5 C100,1 110,6 120,3.5 C130,1 140,6 148,3.5 C149,3.2 150,3.5 150,3.5"/>
+          </svg>
+        </span>
+      </div>
+
+      <p class="work-body reveal d1">
+        Client names stay confidential &mdash; the work speaks in outcomes. Across these,
+        my seat changes: sometimes PMO lead, sometimes functional architect, sometimes
+        the person accountable for value showing up after go-live.
+      </p>
+
+      <div class="interests">
+
+        <div class="i-block reveal d1">
+          <p class="i-cat">Global FMCG major &mdash; Inventory</p>
+          <p class="i-lead">Found €30M+ of excess inventory hiding in plain sight.</p>
+          <p class="i-body">A network-wide inventory assessment for a personal-care giant across Europe and the US: right-sizing safety stocks, separating cycle stock from comfort stock, and simulating what a single day of lead-time reduction was worth across the European network &mdash; a number large enough to change the conversation from "inventory project" to "board topic".</p>
+        </div>
+
+        <div class="i-block reveal d2">
+          <p class="i-cat">Industrial-equipment major &mdash; Planning platform</p>
+          <p class="i-lead">The playbooks behind a global supply-allocation engine.</p>
+          <p class="i-body">Designed the planning logic a global manufacturer runs its allocation decisions on: supply allocation, aggregate planning, dependent-demand forecasting with forecast-accuracy and bias dashboards, and MSS/RCCP master scheduling &mdash; plus a safety-stock methodology that corrects for forecast error, bias and supply reliability instead of pretending demand is well-behaved.</p>
+        </div>
+
+        <div class="i-block reveal d3">
+          <p class="i-cat">Energy major &mdash; S&amp;OP / S&amp;OE on Kinaxis</p>
+          <p class="i-lead">An operating blueprint, not a slide deck.</p>
+          <p class="i-body">End-to-end S&amp;OP and S&amp;OE design on RapidResponse &mdash; planning calendar, decision rights, exception workflows &mdash; built with the explicit test that it should survive contact with the organisation long after the engagement team rolls off. It did.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────── 03 — OUTSIDE WORK ─────────────────────── -->
+  <section class="section" id="s-outside">
+    <div class="wrap">
+
+      <div class="s-eyebrow reveal">
+        <span class="s-num">03</span>
+        <span class="s-title">
+          Outside Work
+          <svg class="squiggle" viewBox="0 0 110 7" aria-hidden="true" preserveAspectRatio="none">
+            <path d="M0,3.5 C9,1 18,6 27,3.5 C36,1 45,6 54,3.5 C63,1 72,6 81,3.5 C90,1 99,6 108,3.5 C109,3 110,3.5 110,3.5"/>
+          </svg>
+        </span>
+      </div>
+
+      <div class="interests">
+
+        <div class="i-block reveal d1">
+          <p class="i-cat">Travel</p>
+          <p class="i-lead">For work and for the love of it — and always with family when I can manage it.</p>
+          <p class="i-body">Work takes me across cities and time zones regularly. Personally, I travel for the change of pace. The annual family trip is a ritual I protect: my parents, a new destination, the same familiar chaos. There's something about moving through an unfamiliar place that clears out the noise in a way nothing else quite does.</p>
+        </div>
+
+        <div class="i-block reveal d2">
+          <p class="i-cat">Gaming</p>
+          <p class="i-lead">Started before I had a salary and never really stopped.</p>
+          <p class="i-body">Age of Empires, Dota 2, CS:GO &mdash; played competitively and obsessively, well into my working years. Some habits don't retire, and I've made peace with that. Board games whenever I can corner people into a session: I'm the one who knows the rulebook and still somehow loses to a first-timer.</p>
+        </div>
+
+        <div class="i-block reveal d3">
+          <p class="i-cat">Reading &amp; Ideas</p>
+          <p class="i-lead">Heavy reader &mdash; mostly non-fiction, strategy, and whatever thread I'm currently pulling on.</p>
+          <p class="i-body">Supply chain thinking turns up in everything eventually &mdash; how a city manages traffic, why some systems fail under pressure and others don't. I follow AI in planning closely: not the hype cycle, but the structural shift in what planning work will actually look like a decade from now.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────── 04 — BACKGROUND ────────────────────────── -->
+  <section class="section" id="s-bg">
+    <div class="wrap">
+
+      <div class="s-eyebrow reveal">
+        <span class="s-num">04</span>
+        <span class="s-title">
+          Background
+          <svg class="squiggle" viewBox="0 0 100 7" aria-hidden="true" preserveAspectRatio="none">
+            <path d="M0,3.5 C8,1 16,6 24,3.5 C32,1 40,6 48,3.5 C56,1 64,6 72,3.5 C80,1 88,6 96,3.5 C97.5,3 99,3.3 100,3.5"/>
+          </svg>
+        </span>
+      </div>
+
+      <div class="bg-grid reveal d1">
+        <div>
+          <p class="bg-meta">Current</p>
+          <p class="bg-title">EY India LLP</p>
+          <p class="bg-sub">Director, Technology Consulting<br/>Supply chain transformation &amp; advanced planning</p>
+        </div>
+        <div>
+          <p class="bg-meta">Industries</p>
+          <p class="bg-sub">Pharmaceuticals &amp; Life Sciences<br/>FMCG &amp; Consumer Goods<br/>Utilities &amp; Energy</p>
+        </div>
+        <div>
+          <p class="bg-meta">Education</p>
+          <p class="bg-title">NITIE Mumbai</p>
+          <p class="bg-sub">PG Diploma, IT &amp; Supply Chain &middot; 2012</p>
+          <br/>
+          <p class="bg-title">NIT Raipur</p>
+          <p class="bg-sub">B.Tech, Mechanical Engineering &middot; 2010</p>
+        </div>
+        <div>
+          <p class="bg-meta">Languages</p>
+          <div class="langs" style="margin-bottom:20px">
+            <span><strong>English</strong> &mdash; professional</span>
+            <span><strong>Hindi</strong> &mdash; native</span>
+            <span><strong>French</strong> &mdash; elementary</span>
+          </div>
+          <p class="bg-meta">Volunteer</p>
+          <p class="bg-sub">EY Ripples &mdash; student mentoring, 14+ years</p>
+        </div>
+      </div>
+
+      <p class="creds-meta reveal d2">Certifications</p>
+      <ul class="creds-list">
+        <li class="reveal d2">SAP IBP Certified</li>
+        <li class="reveal d2">Kinaxis RapidResponse &mdash; Admin, Author &amp; Contributor L1</li>
+        <li class="reveal d3">CPIM &mdash; Certified in Production &amp; Inventory Management</li>
+        <li class="reveal d3">Six Sigma Green Belt</li>
+        <li class="reveal d4">Management Development Programme, IIM Ahmedabad</li>
+        <li class="reveal d4">EY Digital &mdash; Bronze &middot; EY Analytics &amp; Data Science &mdash; Bronze</li>
+        <li class="reveal d4">AI for Everyone &mdash; DeepLearning.AI</li>
+      </ul>
+
+    </div>
+  </section>
+
+  <!-- Footer ─────────────────────────────────────────────── -->
+  <footer>
+    <div class="wrap">
+      <p class="footer-note">Bangalore &middot; India &middot; 2026</p>
+      <ul class="footer-links">
+        <li><a href="https://www.linkedin.com/in/lavi-sahu-6b075023" target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href="mailto:lavi.nitie@gmail.com">lavi.nitie@gmail.com</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <!-- ─────────────────────────────────────────────────────
+       JS — all 3 interactive premium features
+       ───────────────────────────────────────────────────── -->
+  <script>
+
+    /* ① Scroll fade-and-rise — IntersectionObserver ─────── */
+    const revObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in-view');
+          revObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.10 });
+
+    document.querySelectorAll('.reveal').forEach(el => revObs.observe(el));
+
+
+    /* ② Custom cursor companion ─────────────────────────── */
+    (function () {
+      const mq = matchMedia('(hover: hover)');
+      if (!mq.matches) return;
+
+      const cur = document.getElementById('cursor');
+      if (!cur) return;
+
+      document.documentElement.classList.add('js-cursor');
+
+      let raf;
+      let tx = -100, ty = -100;
+
+      document.addEventListener('mousemove', e => {
+        tx = e.clientX; ty = e.clientY;
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => {
+          cur.style.transform = `translate3d(${tx}px,${ty}px,0)`;
+        });
+      });
+
+      const onEnter = () => cur.classList.add('is-hover');
+      const onLeave = () => cur.classList.remove('is-hover');
+
+      document.querySelectorAll('a, .chip').forEach(el => {
+        el.addEventListener('mouseenter', onEnter);
+        el.addEventListener('mouseleave', onLeave);
+      });
+    })();
+
+
+    /* ③ Section index — visibility + active highlight ───── */
+    (function () {
+      const sNav  = document.getElementById('s-nav');
+      const hero  = document.getElementById('s-hero');
+      if (!sNav || !hero) return;
+
+      /* Show after hero scrolls out */
+      new IntersectionObserver(([e]) => {
+        sNav.classList.toggle('visible', !e.isIntersecting);
+      }, { threshold: 0 }).observe(hero);
+
+      /* Highlight active section */
+      const sections = [
+        { id: 's-work',    link: sNav.querySelector('[data-target="s-work"]') },
+        { id: 's-eng',     link: sNav.querySelector('[data-target="s-eng"]') },
+        { id: 's-outside', link: sNav.querySelector('[data-target="s-outside"]') },
+        { id: 's-bg',      link: sNav.querySelector('[data-target="s-bg"]') },
+      ].map(s => ({ ...s, el: document.getElementById(s.id) }))
+       .filter(s => s.el && s.link);
+
+      function updateActive () {
+        const mid = window.scrollY + window.innerHeight * 0.45;
+        let active = null;
+        sections.forEach(s => { if (s.el.offsetTop <= mid) active = s; });
+        sections.forEach(s => s.link.classList.toggle('active', s === active));
+      }
+
+      window.addEventListener('scroll', updateActive, { passive: true });
+      updateActive();
+    })();
+
+  </script>
+
+</body>
+</html>
