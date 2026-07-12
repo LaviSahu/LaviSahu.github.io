@@ -11,162 +11,258 @@
 <meta property="og:url" content="https://lavisahu.github.io">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400..600&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ————— Ledger design system — tokens ————— */
+/* ═══════════ THE PLANNING BOARD — tokens ═══════════ */
 :root{
-  --bg:#fafaf9; --surface:#f4f4f2; --ink:#1b1b1f; --muted:#6e6e76; --faint:#a3a3ab;
-  --line:rgba(27,27,31,.09); --accent:#2247c9; --accent-ink:#1a3699;
-  --sans:'Inter',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
-  --pad:clamp(20px,6vw,48px); --ease:cubic-bezier(.25,0,.1,1);
+  --paper:#f4f5f2; --card:#fbfcfa; --ink:#171a17; --muted:#5f6660; --faint:#9aa19a;
+  --gridline:rgba(23,26,23,.055); --rule:rgba(23,26,23,.14); --rule-soft:rgba(23,26,23,.08);
+  --signal:#e04f16; --signal-soft:rgba(224,79,22,.09);
+  --disp:'Archivo',system-ui,sans-serif;
+  --serif:'Source Serif 4',Georgia,serif;
+  --mono:'Spline Sans Mono',ui-monospace,monospace;
+  --pad:clamp(20px,5vw,56px); --ease:cubic-bezier(.22,.08,.14,1);
 }
-html[data-theme="dark"]{
-  --bg:#101012; --surface:#18181b; --ink:#e9e9ec; --muted:#94949c; --faint:#5c5c64;
-  --line:rgba(233,233,236,.1); --accent:#8fa5ff; --accent-ink:#b3c2ff;
+:root[data-theme="dark"]{
+  --paper:#141613; --card:#1b1e1a; --ink:#e9ebe4; --muted:#9ba398; --faint:#5e665d;
+  --gridline:rgba(233,235,228,.045); --rule:rgba(233,235,228,.18); --rule-soft:rgba(233,235,228,.08);
+  --signal:#ff7a45; --signal-soft:rgba(255,122,69,.1);
 }
 @media (prefers-color-scheme:dark){
-  html:not([data-theme="light"]){
-    --bg:#101012; --surface:#18181b; --ink:#e9e9ec; --muted:#94949c; --faint:#5c5c64;
-    --line:rgba(233,233,236,.1); --accent:#8fa5ff; --accent-ink:#b3c2ff;
+  :root:not([data-theme="light"]){
+    --paper:#141613; --card:#1b1e1a; --ink:#e9ebe4; --muted:#9ba398; --faint:#5e665d;
+    --gridline:rgba(233,235,228,.045); --rule:rgba(233,235,228,.18); --rule-soft:rgba(233,235,228,.08);
+    --signal:#ff7a45; --signal-soft:rgba(255,122,69,.1);
   }
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
-  background:var(--bg); color:var(--ink); font:400 15.5px/1.65 var(--sans);
-  -webkit-font-smoothing:antialiased; transition:background 180ms var(--ease),color 180ms var(--ease);
+  background:var(--paper);
+  background-image:
+    linear-gradient(var(--gridline) 1px, transparent 1px),
+    linear-gradient(90deg, var(--gridline) 1px, transparent 1px);
+  background-size:56px 56px;
+  color:var(--ink); font:400 16px/1.6 var(--disp);
+  -webkit-font-smoothing:antialiased;
+  transition:background-color 200ms var(--ease), color 200ms var(--ease);
 }
-a{color:inherit; text-decoration:none; transition:color 140ms var(--ease)}
-a:hover{color:var(--accent)}
-:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
-::selection{background:var(--accent); color:var(--bg)}
-.mono{font-family:var(--mono)}
+a{color:inherit; text-decoration:none}
+:focus-visible{outline:2px solid var(--signal); outline-offset:3px}
+::selection{background:var(--signal); color:var(--paper)}
 .num{font-variant-numeric:tabular-nums}
 
-/* ————— layout ————— */
-.wrap{max-width:680px; margin:0 auto; padding:0 var(--pad)}
-.wrap-wide{max-width:920px; margin:0 auto; padding:0 var(--pad)}
-section{padding:clamp(72px,12vh,128px) 0 0}
-footer{padding:clamp(72px,12vh,128px) 0 48px}
+.frame{max-width:1060px; margin:0 auto; padding:0 var(--pad)}
+.col{max-width:640px}
+section{padding:clamp(88px,13vh,150px) 0 0}
 
-/* ————— nav ————— */
-nav{
-  position:sticky; top:0; z-index:10; background:var(--bg);
-  border-bottom:1px solid var(--line); transition:background 180ms var(--ease);
+/* ——— reveal choreography (progressive: hidden only when JS is driving) ——— */
+html.js .rv{opacity:0; transform:translateY(14px); transition:opacity .6s var(--ease), transform .6s var(--ease)}
+html.js .rv.in{opacity:1; transform:none}
+@media (prefers-reduced-motion:reduce){
+  .rv{opacity:1; transform:none; transition:none}
+  html{scroll-behavior:auto}
+  *{transition-duration:0ms!important; animation:none!important}
 }
-.nav-in{
-  max-width:920px; margin:0 auto; padding:14px var(--pad);
-  display:flex; align-items:center; gap:20px;
-}
-.nav-name{font-family:var(--mono); font-size:13px; font-weight:500; letter-spacing:.02em}
-.nav-links{
-  display:flex; gap:18px; margin-left:auto; overflow-x:auto; scrollbar-width:none;
-  font-family:var(--mono); font-size:12px; text-transform:lowercase; letter-spacing:.04em;
-}
+
+/* ——— top bar ——— */
+nav{position:sticky; top:0; z-index:20; background:color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--rule-soft)}
+.nav-in{max-width:1060px; margin:0 auto; padding:0 var(--pad);
+  display:flex; align-items:stretch; gap:26px; height:58px}
+.brand{display:flex; align-items:center; gap:10px; font:600 14px var(--disp); letter-spacing:.01em}
+.brand .dot{width:9px; height:9px; background:var(--signal); border-radius:50%}
+.nav-links{display:flex; margin-left:auto; overflow-x:auto; scrollbar-width:none}
 .nav-links::-webkit-scrollbar{display:none}
-.nav-links a{color:var(--muted); white-space:nowrap; padding:4px 0}
-.nav-links a:hover{color:var(--accent)}
-#theme-btn{
-  background:none; border:none; cursor:pointer; color:var(--muted);
-  font:400 14px var(--mono); padding:4px 6px; margin-left:8px;
+.nav-links a{
+  display:flex; align-items:center; padding:0 13px; white-space:nowrap;
+  font:500 11.5px var(--mono); letter-spacing:.09em; text-transform:uppercase; color:var(--muted);
+  border-bottom:2px solid transparent; transition:color 150ms var(--ease), border-color 150ms var(--ease);
 }
-#theme-btn:hover{color:var(--accent)}
+.nav-links a:hover{color:var(--ink); border-bottom-color:var(--signal)}
+#theme-btn{background:none; border:1px solid var(--rule); border-radius:50%;
+  width:30px; height:30px; align-self:center; cursor:pointer; color:var(--muted);
+  font:400 13px var(--mono); transition:color 150ms var(--ease), border-color 150ms var(--ease)}
+#theme-btn:hover{color:var(--signal); border-color:var(--signal)}
 
-/* ————— section headers ————— */
-.sh{display:flex; align-items:baseline; gap:14px; margin-bottom:36px}
-.sh .ix{font-family:var(--mono); font-size:13px; color:var(--faint); font-variant-numeric:tabular-nums}
-.sh .lb{font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:.14em; color:var(--muted)}
-.sh::after{content:""; flex:1; border-top:1px solid var(--line); align-self:center}
+/* ——— hero ——— */
+.hero{position:relative; padding:clamp(64px,10vh,120px) 0 0; overflow:hidden}
+#routes{position:absolute; inset:0; width:100%; height:100%; pointer-events:none; opacity:.9}
+.hero-in{position:relative}
+.stamp{
+  display:inline-flex; align-items:center; gap:8px; margin-bottom:28px;
+  font:500 11px var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--signal);
+  border:1px solid var(--signal); padding:6px 12px; border-radius:2px;
+}
+.hero h1{
+  font-family:var(--disp); font-weight:800; text-wrap:balance;
+  font-size:clamp(44px,8.2vw,104px); line-height:.98; letter-spacing:-.028em;
+  font-variation-settings:"wdth" 72; text-transform:uppercase;
+}
+.hero h1 em{font-style:normal; color:var(--signal)}
+.hero .role{
+  margin-top:26px; font:500 13px var(--mono); color:var(--muted); letter-spacing:.02em;
+  display:flex; flex-wrap:wrap; gap:8px 0;
+}
+.hero .role b{color:var(--ink); font-weight:600}
+.hero .role span+span::before{content:"/"; margin:0 10px; color:var(--faint)}
+.hero .bio{margin-top:18px; max-width:520px; color:var(--muted); font-size:16.5px}
+.manifest{
+  margin-top:56px; display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  border:1px solid var(--rule); background:var(--card); border-radius:3px; overflow:hidden;
+}
+.mi{padding:18px 20px; border-right:1px solid var(--rule-soft)}
+.mi:last-child{border-right:none}
+.mi .v{font:600 34px/1 var(--disp); letter-spacing:-.02em; font-variation-settings:"wdth" 80}
+.mi .v sup{font-size:16px; color:var(--signal); font-weight:600}
+.mi .k{margin-top:7px; font:500 10.5px var(--mono); letter-spacing:.13em; text-transform:uppercase; color:var(--muted)}
 
-/* ————— hero ————— */
-.hero{padding-top:clamp(80px,16vh,160px)}
-.hero h1{font-size:clamp(28px,4.5vw,44px); font-weight:600; letter-spacing:-.022em; line-height:1.15}
-.hero .role{font-family:var(--mono); font-size:13px; color:var(--muted); margin-top:16px}
-.hero .bio{color:var(--muted); margin-top:20px; max-width:560px}
-.hero .loc{font-family:var(--mono); font-size:12px; color:var(--faint); margin-bottom:20px; letter-spacing:.08em; text-transform:uppercase}
-.stats{display:flex; gap:36px; margin-top:44px; flex-wrap:wrap}
-.stat .v{font-family:var(--mono); font-size:22px; font-weight:500; font-variant-numeric:tabular-nums}
-.stat .k{font-family:var(--mono); font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; margin-top:4px}
-
-/* ————— prose bits ————— */
-.lead{max-width:600px}
+/* ——— section chrome ——— */
+.sec-h{display:flex; align-items:center; gap:16px; margin-bottom:44px}
+.sec-h .code{
+  font:600 11px var(--mono); letter-spacing:.14em; color:var(--paper); background:var(--ink);
+  padding:5px 10px; border-radius:2px;
+}
+.sec-h h2{
+  font:700 clamp(26px,3.6vw,40px)/1.05 var(--disp); letter-spacing:-.02em;
+  font-variation-settings:"wdth" 78; text-transform:uppercase; text-wrap:balance;
+}
+.sec-h::after{content:""; flex:1; border-top:1px solid var(--rule)}
+.lead{max-width:600px; color:var(--muted); font-size:16.5px}
 .lead p+p{margin-top:14px}
-.kv{display:grid; grid-template-columns:auto 1fr; gap:6px 24px; font-family:var(--mono); font-size:13px; margin-top:28px}
-.kv dt{color:var(--faint); text-transform:lowercase}
-.kv dd{color:var(--muted)}
+.lead .pin{color:var(--ink); font-weight:500}
 
-/* ————— ledger rows ————— */
-.rows{border-top:1px solid var(--line)}
+/* ——— tiles (expertise / think blocks) ——— */
+.tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; margin-top:40px}
+.tile{
+  background:var(--card); border:1px solid var(--rule); border-radius:3px; padding:22px;
+  transition:transform 180ms var(--ease), border-color 180ms var(--ease), box-shadow 180ms var(--ease);
+}
+.tile:hover{transform:translateY(-3px); border-color:var(--signal); box-shadow:0 10px 28px -18px rgba(23,26,23,.4)}
+.tile .tk{font:600 11px var(--mono); letter-spacing:.12em; text-transform:uppercase; color:var(--signal); margin-bottom:10px}
+.tile h3{font:600 17px/1.3 var(--disp); letter-spacing:-.01em; margin-bottom:8px}
+.tile p{color:var(--muted); font-size:14.5px}
+
+/* ——— engagement dossiers ——— */
+.dossiers{display:grid; gap:14px; margin-top:40px}
+.dossier{
+  background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--signal);
+  border-radius:3px; padding:24px 26px; display:grid; gap:10px;
+}
+.dossier .dk{font:600 11px var(--mono); letter-spacing:.13em; text-transform:uppercase; color:var(--muted)}
+.dossier h3{font:650 20px/1.25 var(--disp); letter-spacing:-.015em}
+.dossier p{color:var(--muted); font-size:15px; max-width:640px}
+.proof-strip{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin-top:14px}
+.proof{background:var(--signal-soft); border:1px solid transparent; border-radius:3px; padding:20px 22px}
+.proof .pv{font:700 40px/1 var(--disp); font-variation-settings:"wdth" 80; letter-spacing:-.02em; color:var(--signal)}
+.proof p{color:var(--muted); font-size:13.5px; margin-top:10px}
+.proof .pa{font:500 10.5px var(--mono); letter-spacing:.12em; text-transform:uppercase; color:var(--faint); margin-top:10px}
+
+/* ——— demo consoles ——— */
+.consoles{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; margin-top:40px}
+.console{
+  position:relative; background:var(--card); border:1px solid var(--rule); border-radius:3px;
+  padding:22px; display:grid; gap:9px; align-content:start;
+  transition:transform 180ms var(--ease), border-color 180ms var(--ease), box-shadow 180ms var(--ease);
+}
+.console:hover{transform:translateY(-3px); border-color:var(--signal); box-shadow:0 10px 28px -18px rgba(23,26,23,.4)}
+.console .badge{
+  position:absolute; top:16px; right:16px;
+  font:600 10px var(--mono); letter-spacing:.12em; text-transform:uppercase;
+  color:var(--signal); border:1px solid var(--signal); padding:3px 8px; border-radius:20px;
+}
+.console h3{font:650 18px var(--disp); letter-spacing:-.01em; padding-right:56px}
+.console p{color:var(--muted); font-size:14.5px}
+.console .go{font:500 12px var(--mono); color:var(--signal); letter-spacing:.06em; margin-top:6px}
+.console:hover .go{text-decoration:underline; text-underline-offset:4px}
+
+/* ——— library ——— */
+.shelf{display:grid; grid-template-columns:180px 1fr; gap:0 36px; margin-top:44px}
+.shelf .cat{
+  position:sticky; top:78px; align-self:start;
+  font:700 15px var(--disp); font-variation-settings:"wdth" 78; text-transform:uppercase;
+  letter-spacing:.04em; padding-top:14px;
+}
+.shelf .cat .c{display:block; font:500 11px var(--mono); color:var(--signal); letter-spacing:.12em; margin-top:5px}
+.rows{border-top:1px solid var(--rule)}
 .row{
-  display:grid; grid-template-columns:1fr auto; gap:4px 24px; align-items:baseline;
-  padding:13px 8px; border-bottom:1px solid var(--line); transition:background 140ms var(--ease);
+  display:grid; grid-template-columns:1fr auto; gap:2px 24px; align-items:baseline;
+  padding:12px 10px; border-bottom:1px solid var(--rule-soft);
+  transition:background 140ms var(--ease);
 }
-.row:hover{background:var(--surface)}
-.row .t{font-weight:500; font-size:15px}
-a.row:hover .t{color:var(--accent)}
-.row .m{font-family:var(--mono); font-size:12px; color:var(--muted); text-align:right; white-space:nowrap}
-.row .sub{grid-column:1/-1; color:var(--muted); font-size:13.5px; max-width:600px}
-.row .take{grid-column:1/-1; font-size:13.5px; color:var(--accent); max-width:600px}
-.row .take::before{content:"★ "; font-size:11px}
-.ext .t::after{content:" ↗"; font-family:var(--mono); font-size:12px; color:var(--faint)}
-
-/* three-col idea cards as plain stacked blocks */
-.blocks{display:grid; gap:0; border-top:1px solid var(--line)}
-.block{padding:20px 8px; border-bottom:1px solid var(--line)}
-.block .bt{font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:.1em; margin-bottom:8px}
-.block p{color:var(--muted); font-size:14px; max-width:600px}
-
-/* proof numbers */
-.proofs{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:0; border-top:1px solid var(--line)}
-.proof{padding:20px 8px; border-bottom:1px solid var(--line)}
-.proof .pv{font-family:var(--mono); font-size:26px; font-weight:500; font-variant-numeric:tabular-nums; color:var(--accent)}
-.proof p{color:var(--muted); font-size:13.5px; margin-top:8px}
-.proof .pa{font-family:var(--mono); font-size:11px; color:var(--faint); text-transform:uppercase; letter-spacing:.1em; margin-top:8px}
-
-/* library */
-.cat-h{
-  font-family:var(--mono); font-size:12px; text-transform:uppercase; letter-spacing:.14em;
-  color:var(--muted); margin:36px 0 0; display:flex; align-items:baseline; gap:12px;
+.row:hover{background:var(--card)}
+.row .t{font-weight:500; font-size:15px; letter-spacing:-.005em}
+.row .m{font:400 12px var(--mono); color:var(--muted); text-align:right; white-space:nowrap}
+.row .take{
+  grid-column:1/-1; font:italic 500 14px/1.5 var(--serif); color:var(--signal); max-width:560px;
 }
-.cat-h .c{color:var(--faint); font-variant-numeric:tabular-nums}
-.book-note{font-family:var(--mono); font-size:12px; color:var(--faint); margin-top:20px}
+.row .take::before{content:"— "}
+.book-note{font:400 12.5px var(--mono); color:var(--muted); margin-top:36px; line-height:2}
+.book-note a{color:var(--signal)}
+.book-note a:hover{text-decoration:underline; text-underline-offset:4px}
 
-/* travel essays */
-details{border-bottom:1px solid var(--line)}
-details:first-of-type{border-top:1px solid var(--line)}
+/* ——— travel ——— */
+.places{
+  margin-top:26px; font:400 13px var(--mono); color:var(--muted); line-height:2.2; max-width:640px;
+}
+.places .home{color:var(--signal); font-weight:600}
+.fieldnotes{margin-top:48px; display:grid; gap:14px}
+details{background:var(--card); border:1px solid var(--rule); border-radius:3px; overflow:hidden}
+details[open]{border-color:var(--signal)}
 summary{
-  cursor:pointer; list-style:none; padding:16px 8px;
+  cursor:pointer; list-style:none; padding:20px 24px;
   display:grid; grid-template-columns:1fr auto; gap:4px 24px; align-items:baseline;
   transition:background 140ms var(--ease);
 }
 summary::-webkit-details-marker{display:none}
-summary:hover{background:var(--surface)}
-summary:hover .t{color:var(--accent)}
-summary .t{font-weight:500}
-summary .t::after{content:"  +"; font-family:var(--mono); color:var(--faint)}
-details[open] summary .t::after{content:"  −"}
-summary .m{font-family:var(--mono); font-size:12px; color:var(--muted); white-space:nowrap}
-summary .sub{grid-column:1/-1; color:var(--muted); font-size:13.5px}
-.essay{padding:4px 8px 24px; max-width:600px}
-.essay p{color:var(--muted); font-size:14px}
-.essay p+p{margin-top:12px}
-.places{font-family:var(--mono); font-size:13px; color:var(--muted); line-height:2; margin-top:8px}
-.places .home{color:var(--accent)}
+summary .t{font:650 18px var(--disp); letter-spacing:-.01em}
+summary .t::after{content:"+"; font:500 16px var(--mono); color:var(--signal); margin-left:12px}
+details[open] summary .t::after{content:"−"}
+summary .m{font:400 12px var(--mono); color:var(--muted); white-space:nowrap}
+summary .sub{grid-column:1/-1; font:500 11.5px var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--faint)}
+.essay{padding:6px 24px 28px; max-width:620px}
+.essay p{font:400 16px/1.75 var(--serif); color:var(--muted)}
+.essay p+p{margin-top:14px}
+.essay p:first-child{color:var(--ink)}
 
-/* footer */
-.foot-line{font-size:clamp(20px,3vw,28px); font-weight:600; letter-spacing:-.02em; max-width:560px}
-.foot-meta{margin-top:36px; display:flex; gap:24px; flex-wrap:wrap; font-family:var(--mono); font-size:13px; color:var(--muted)}
-.foot-meta a{text-decoration:underline; text-decoration-color:var(--line); text-underline-offset:4px}
-.foot-meta a:hover{text-decoration-color:var(--accent)}
-.colophon{font-family:var(--mono); font-size:11px; color:var(--faint); margin-top:48px}
+/* ——— games ——— */
+.sub-h{font:600 11.5px var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--signal); margin:44px 0 14px}
+.gnote{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; margin-top:44px}
 
-@media (max-width:640px){
+/* ——— background spec sheet ——— */
+.spec{border:1px solid var(--rule); background:var(--card); border-radius:3px; margin-top:8px}
+.spec-r{display:grid; grid-template-columns:150px 1fr; gap:24px; padding:16px 22px; border-bottom:1px solid var(--rule-soft)}
+.spec-r:last-child{border-bottom:none}
+.spec-r dt{font:500 11px var(--mono); letter-spacing:.13em; text-transform:uppercase; color:var(--signal); padding-top:3px}
+.spec-r dd{color:var(--muted); font-size:15px}
+.spec-r dd b{color:var(--ink); font-weight:600}
+
+/* ——— footer ——— */
+footer{padding:clamp(88px,13vh,150px) 0 56px}
+.foot-line{
+  font:800 clamp(30px,5.4vw,64px)/1.02 var(--disp); letter-spacing:-.025em;
+  font-variation-settings:"wdth" 72; text-transform:uppercase; max-width:820px; text-wrap:balance;
+}
+.foot-line em{font-style:normal; color:var(--signal)}
+.foot-copy{margin-top:22px; max-width:520px; color:var(--muted)}
+.foot-links{margin-top:36px; display:flex; gap:14px; flex-wrap:wrap}
+.foot-links a{
+  font:500 12px var(--mono); letter-spacing:.08em; text-transform:uppercase;
+  border:1px solid var(--rule); border-radius:2px; padding:11px 18px;
+  transition:border-color 150ms var(--ease), color 150ms var(--ease), transform 150ms var(--ease);
+}
+.foot-links a:hover{border-color:var(--signal); color:var(--signal); transform:translateY(-2px)}
+.foot-links a.primary{background:var(--signal); border-color:var(--signal); color:#fff}
+.foot-links a.primary:hover{color:#fff; filter:brightness(1.08)}
+.colophon{margin-top:64px; font:400 11px var(--mono); color:var(--faint); letter-spacing:.06em}
+
+@media (max-width:760px){
+  .shelf{grid-template-columns:1fr; gap:0}
+  .shelf .cat{position:static; padding:26px 0 10px}
   .row{grid-template-columns:1fr}
   .row .m{text-align:left}
   summary{grid-template-columns:1fr}
-}
-@media (prefers-reduced-motion:reduce){
-  *{transition:none!important} html{scroll-behavior:auto}
+  .hero h1{font-size:clamp(40px,11.5vw,64px)}
 }
 </style>
 </head>
@@ -174,114 +270,118 @@ summary .sub{grid-column:1/-1; color:var(--muted); font-size:13.5px}
 
 <nav>
   <div class="nav-in">
-    <span class="nav-name">lavi sahu</span>
+    <a class="brand" href="#top"><span class="dot"></span>Lavi Sahu</a>
     <div class="nav-links">
-      <a href="#work">work</a><a href="#engagements">engagements</a><a href="#demos">demos</a><a href="#library">library</a><a href="#travel">travel</a><a href="#games">games</a><a href="#background">background</a><a href="#contact">contact</a>
+      <a href="#work">Work</a><a href="#engagements">Engagements</a><a href="#demos">Demos</a><a href="#library">Library</a><a href="#travel">Travel</a><a href="#games">Games</a><a href="#background">Background</a><a href="#contact">Contact</a>
     </div>
     <button id="theme-btn" aria-label="Toggle color theme">◐</button>
   </div>
 </nav>
 
-<!-- 00 — hero -->
-<header class="hero">
-  <div class="wrap">
-    <p class="loc mono">Bangalore · India</p>
-    <h1>Supply-chain planner.<br>Traveller. Reader.<br>Board-game tactician.</h1>
-    <p class="role">Director, Supply-Chain Tech Consulting — EY · 14 years across SAP IBP, o9, OMP and S&amp;OP</p>
-    <p class="bio">By day: making planning platforms actually work, long after the consultants have left. Off the clock: 19 countries, a stubborn book habit, and three moves deep in a Euro board game.</p>
-    <div class="stats num">
-      <div class="stat"><div class="v">14</div><div class="k">years in supply chain</div></div>
-      <div class="stat"><div class="v">162</div><div class="k">books on the shelf</div></div>
-      <div class="stat"><div class="v">19</div><div class="k">countries on the map</div></div>
-      <div class="stat"><div class="v">4</div><div class="k">continents roamed</div></div>
+<!-- ═══ HERO — the planning board ═══ -->
+<header class="hero" id="top">
+  <canvas id="routes" aria-hidden="true"></canvas>
+  <div class="frame hero-in">
+    <p class="stamp rv">Bangalore · India — 12.97°N 77.59°E</p>
+    <h1 class="rv">Supply-chain planner.<br>Traveller. Reader.<br>Board-game <em>tactician.</em></h1>
+    <div class="role rv">
+      <span><b>Director, Supply-Chain Tech Consulting — EY</b></span><span>14 years</span><span>SAP IBP · o9 · OMP · S&amp;OP</span>
+    </div>
+    <p class="bio rv">By day: making planning platforms actually work, long after the consultants have left. Off the clock: 19 countries, a stubborn book habit, and three moves deep in a Euro board game.</p>
+    <div class="manifest rv num">
+      <div class="mi"><div class="v">14<sup>yrs</sup></div><div class="k">in supply chain</div></div>
+      <div class="mi"><div class="v">162</div><div class="k">books on the shelf</div></div>
+      <div class="mi"><div class="v">19</div><div class="k">countries on the map</div></div>
+      <div class="mi"><div class="v">4</div><div class="k">continents roamed</div></div>
     </div>
   </div>
 </header>
 
-<!-- 01 — work -->
+<!-- ═══ WRK ═══ -->
 <section id="work">
-  <div class="wrap">
-    <div class="sh"><span class="ix">01</span><span class="lb">The work</span></div>
-    <div class="lead">
-      <p>Planning, end to end. Fourteen years of supply-chain consulting means I've seen most of what can go right and wrong in a large implementation. My work lives at the intersection of advanced planning platforms, S&amp;OP design, inventory optimisation, and AI in planning — usually in pharma, FMCG, utilities, or energy.</p>
-      <p>The platform is rarely the problem. The question is always whether the organisation is ready to use it.</p>
+  <div class="frame">
+    <div class="sec-h rv"><span class="code">WRK</span><h2>Planning, end to end</h2></div>
+    <div class="lead rv">
+      <p>Fourteen years of supply-chain consulting means I've seen most of what can go right and wrong in a large implementation. My work lives at the intersection of advanced planning platforms, S&amp;OP design, inventory optimisation, and AI in planning — usually in pharma, FMCG, utilities, or energy.</p>
+      <p class="pin">The platform is rarely the problem. The question is always whether the organisation is ready to use it.</p>
     </div>
-    <div class="blocks" style="margin-top:36px">
-      <div class="block"><div class="bt">S&amp;OP / IBP process design</div><p>Standing up the monthly cadence — demand review, supply review, reconciliation, exec S&amp;OP — so decisions get made and held.</p></div>
-      <div class="block"><div class="bt">SAP IBP &amp; o9 implementation</div><p>Modeling, configuration and deployment across demand, inventory and supply planning — blueprint to hypercare.</p></div>
-      <div class="block"><div class="bt">Network &amp; inventory optimization</div><p>Multi-echelon inventory, safety-stock policy and network design that frees cash without starving service.</p></div>
-      <div class="block"><div class="bt">Demand planning &amp; forecasting</div><p>Statistical baselines plus a real consensus process — measurable accuracy, less downstream firefighting.</p></div>
+    <div class="tiles">
+      <div class="tile rv"><div class="tk">Cadence</div><h3>S&amp;OP / IBP process design</h3><p>Standing up the monthly cadence — demand review, supply review, reconciliation, exec S&amp;OP — so decisions get made and held.</p></div>
+      <div class="tile rv"><div class="tk">Platform</div><h3>SAP IBP &amp; o9 implementation</h3><p>Modeling, configuration and deployment across demand, inventory and supply planning — blueprint to hypercare.</p></div>
+      <div class="tile rv"><div class="tk">Network</div><h3>Network &amp; inventory optimization</h3><p>Multi-echelon inventory, safety-stock policy and network design that frees cash without starving service.</p></div>
+      <div class="tile rv"><div class="tk">Signal</div><h3>Demand planning &amp; forecasting</h3><p>Statistical baselines plus a real consensus process — measurable accuracy, less downstream firefighting.</p></div>
     </div>
-    <dl class="kv">
-      <dt>platforms</dt><dd>SAP IBP · OMP · o9 Solutions · Kinaxis RapidResponse</dd>
-      <dt>seat</dt><dd>PMO lead · functional architect · value-realization owner</dd>
-      <dt>industries</dt><dd>pharma · FMCG · utilities · energy</dd>
-    </dl>
   </div>
 </section>
 
-<!-- 02 — engagements -->
+<!-- ═══ ENG ═══ -->
 <section id="engagements">
-  <div class="wrap">
-    <div class="sh"><span class="ix">02</span><span class="lb">Selected engagements</span></div>
-    <div class="lead"><p>Client names stay confidential — the work speaks in outcomes.</p></div>
-    <div class="blocks" style="margin-top:36px">
-      <div class="block">
-        <div class="bt" style="color:var(--accent)">Global FMCG major — inventory</div>
-        <p>A network-wide inventory assessment for a personal-care giant across Europe and the US: right-sizing safety stocks, separating cycle stock from comfort stock, and simulating what a single day of lead-time reduction was worth across the European network. €30M+ of excess inventory identified — a number large enough to move the conversation from "inventory project" to "board topic".</p>
+  <div class="frame">
+    <div class="sec-h rv"><span class="code">ENG</span><h2>Selected engagements</h2></div>
+    <div class="lead rv"><p>Client names stay confidential — the work speaks in outcomes.</p></div>
+    <div class="dossiers">
+      <div class="dossier rv">
+        <div class="dk">Global FMCG major · inventory</div>
+        <h3>€30M+ of excess inventory, found hiding in plain sight</h3>
+        <p>A network-wide inventory assessment for a personal-care giant across Europe and the US: right-sizing safety stocks, separating cycle stock from comfort stock, and simulating what a single day of lead-time reduction was worth across the European network — a number large enough to move the conversation from "inventory project" to "board topic".</p>
       </div>
-      <div class="block">
-        <div class="bt" style="color:var(--accent)">Industrial-equipment major — planning platform</div>
+      <div class="dossier rv">
+        <div class="dk">Industrial-equipment major · planning platform</div>
+        <h3>The playbooks behind a global supply-allocation engine</h3>
         <p>Designed the planning logic a global manufacturer runs its allocation decisions on: supply allocation, aggregate planning, dependent-demand forecasting with forecast-accuracy and bias dashboards, and MSS/RCCP master scheduling — plus a safety-stock methodology that corrects for forecast error, bias and supply reliability instead of pretending demand is well-behaved.</p>
       </div>
-      <div class="block">
-        <div class="bt" style="color:var(--accent)">Energy major — S&amp;OP / S&amp;OE on Kinaxis</div>
+      <div class="dossier rv">
+        <div class="dk">Energy major · S&amp;OP / S&amp;OE on Kinaxis</div>
+        <h3>An operating blueprint, not a slide deck</h3>
         <p>End-to-end S&amp;OP and S&amp;OE design on RapidResponse — planning calendar, decision rights, exception workflows — built with the explicit test that it should survive contact with the organisation long after the engagement team rolls off. It did.</p>
       </div>
     </div>
-    <div class="proofs" style="margin-top:36px">
-      <div class="proof"><div class="pv">−40%</div><p>Planning cycle time cut through an integrated S&amp;OP redesign and tool rollout.</p><div class="pa">Global CPG manufacturer</div></div>
-      <div class="proof"><div class="pv">98%+</div><p>Service level held while finished-goods inventory came down ~18% via safety-stock re-optimization.</p><div class="pa">Pharma client</div></div>
-      <div class="proof"><div class="pv">5</div><p>Regions brought onto one integrated planning process and a single source of demand truth.</p><div class="pa">Industrial manufacturer</div></div>
+    <div class="proof-strip">
+      <div class="proof rv num"><div class="pv">−40%</div><p>Planning cycle time cut through an integrated S&amp;OP redesign and tool rollout.</p><div class="pa">Global CPG manufacturer</div></div>
+      <div class="proof rv num"><div class="pv">98%+</div><p>Service level held while finished-goods inventory came down ~18% via safety-stock re-optimization.</p><div class="pa">Pharma client</div></div>
+      <div class="proof rv num"><div class="pv">5</div><p>Regions brought onto one integrated planning process and a single source of demand truth.</p><div class="pa">Industrial manufacturer</div></div>
     </div>
   </div>
 </section>
 
-<!-- 03 — demos -->
+<!-- ═══ DMO ═══ -->
 <section id="demos">
-  <div class="wrap">
-    <div class="sh"><span class="ix">03</span><span class="lb">Live demos</span></div>
-    <div class="lead"><p>Don't take my word for it — move the levers. Live tools that show how planning trade-offs actually behave. No slides, no hand-waving.</p></div>
-    <div class="rows" style="margin-top:36px">
-      <a class="row ext" href="https://lavisahu.pages.dev/#/work" target="_blank" rel="noopener">
-        <span class="t">S&amp;OP Scenario Simulator</span><span class="m">live</span>
-        <span class="sub">Move the levers a planner actually controls — demand, capacity, service target, lead time — and watch service, utilization, inventory and obsolescence risk move in real time.</span>
+  <div class="frame">
+    <div class="sec-h rv"><span class="code">DMO</span><h2>Move the levers yourself</h2></div>
+    <div class="lead rv"><p>Live tools that show how planning trade-offs actually behave. No slides, no hand-waving.</p></div>
+    <div class="consoles">
+      <a class="console rv" href="https://lavisahu.pages.dev/#/work" target="_blank" rel="noopener">
+        <span class="badge">Live</span><h3>S&amp;OP Scenario Simulator</h3>
+        <p>Demand, capacity, service target, lead time — watch service, utilization, inventory and obsolescence risk move in real time.</p>
+        <span class="go">open the simulator ↗</span>
       </a>
-      <a class="row ext" href="https://lavisahu.pages.dev/#/work" target="_blank" rel="noopener">
-        <span class="t">Inventory Optimization Calculator</span><span class="m">live</span>
-        <span class="sub">EOQ, safety stock and reorder point from your own numbers — the math behind every replenishment policy.</span>
+      <a class="console rv" href="https://lavisahu.pages.dev/#/work" target="_blank" rel="noopener">
+        <span class="badge">Live</span><h3>Inventory Optimizer</h3>
+        <p>EOQ, safety stock and reorder point from your own numbers — the math behind every replenishment policy.</p>
+        <span class="go">run your numbers ↗</span>
       </a>
-      <a class="row ext" href="https://lavisahu.pages.dev/#/work" target="_blank" rel="noopener">
-        <span class="t">Bullwhip Visualizer</span><span class="m">live</span>
-        <span class="sub">A small wiggle at the shelf becomes a storm upstream — watch demand variability amplify tier by tier.</span>
+      <a class="console rv" href="https://lavisahu.pages.dev/#/work" target="_blank" rel="noopener">
+        <span class="badge">Live</span><h3>Bullwhip Visualizer</h3>
+        <p>A small wiggle at the shelf becomes a storm upstream — watch demand variability amplify tier by tier.</p>
+        <span class="go">crack the whip ↗</span>
       </a>
-      <a class="row ext" href="https://lavisahu.pages.dev/#/work" target="_blank" rel="noopener">
-        <span class="t">Ask my AI twin</span><span class="m">beta</span>
-        <span class="sub">A supply-chain AI trained on how I think — ask it about S&amp;OP, IBP, o9, inventory. Practitioner-grade answers, no fluff.</span>
+      <a class="console rv" href="https://lavisahu.pages.dev/#/work" target="_blank" rel="noopener">
+        <span class="badge">Beta</span><h3>Ask my AI twin</h3>
+        <p>A supply-chain AI trained on how I think — ask it about S&amp;OP, IBP, o9, inventory. Practitioner-grade answers, no fluff.</p>
+        <span class="go">start asking ↗</span>
       </a>
     </div>
   </div>
 </section>
 
-<!-- 04 — library -->
+<!-- ═══ LIB ═══ -->
 <section id="library">
-  <div class="wrap-wide">
-    <div class="sh"><span class="ix">04</span><span class="lb">The library</span></div>
-    <div class="lead">
-      <p>One wall in Bangalore, 162 books deep — 12 shelves. Starred rows carry my take; a few open into full interactive breakdowns on the demo site.</p>
+  <div class="frame">
+    <div class="sec-h rv"><span class="code">LIB</span><h2>The library</h2></div>
+    <div class="lead rv">
+      <p>One wall in Bangalore, 162 books deep — 12 shelves. Rows in <span style="color:var(--signal)">orange serif</span> carry my take; a few open into full interactive breakdowns on the demo site.</p>
     </div>
-    <div class="rows" style="margin-top:8px; border-top:none">
-      <div class="cat-h"><span>Biography</span><span class="c num">14</span></div>
+    <div class="shelf rv"><div class="cat">Biography<span class="c num">14 titles</span></div><div class="rows">
       <div class="row"><span class="t">Losing My Virginity</span><span class="m num">Richard Branson · 1998</span></div>
       <div class="row"><span class="t">Playing It My Way</span><span class="m num">Sachin Tendulkar · 2015</span></div>
       <div class="row"><span class="t">Capote</span><span class="m num">Gerald Clarke · 1988</span></div>
@@ -296,7 +396,8 @@ summary .sub{grid-column:1/-1; color:var(--muted); font-size:13.5px}
       <div class="row"><span class="t">Churchill&#x27;s First War</span><span class="m num">Con Coughlin · 2014</span></div>
       <div class="row"><span class="t">The Man Who Saved India</span><span class="m num">Hindol Sengupta</span></div>
       <div class="row"><span class="t">Elon Musk</span><span class="m num">Ashlee Vance · 2013</span></div>
-      <div class="cat-h"><span>Business</span><span class="c num">16</span></div>
+    </div></div>
+    <div class="shelf rv"><div class="cat">Business<span class="c num">16 titles</span></div><div class="rows">
       <div class="row"><span class="t">Connect the Dots</span><span class="m num">Rashmi · 2007</span></div>
       <div class="row"><span class="t">Jugaad Innovation</span><span class="m num">Navi Radjou, Jaideep Prabhu, Simone Ahuja · 2013</span></div>
       <div class="row"><span class="t">The Making of Star India</span><span class="m num"></span></div>
@@ -313,7 +414,8 @@ summary .sub{grid-column:1/-1; color:var(--muted); font-size:13.5px}
       <div class="row"><span class="t">The Goal 2: It&#x27;s Not Luck</span><span class="m num">Eliyahu M. Goldratt</span><span class="take">Constraints thinking as a novel — it rewired how I see every system.</span></div>
       <div class="row"><span class="t">Fusion Strategy — How Real-Time Data and AI Will Power the Industrial Future</span><span class="m num">Govindarajan, Venkatraman</span></div>
       <div class="row"><span class="t">Mastering the Rockefeller Habits</span><span class="m num">Verne Harnish · 2002</span></div>
-      <div class="cat-h"><span>Fiction</span><span class="c num">41</span></div>
+    </div></div>
+    <div class="shelf rv"><div class="cat">Fiction<span class="c num">41 titles</span></div><div class="rows">
       <div class="row"><span class="t">Tiya: A Parrot&#x27;s Journey Home</span><span class="m num">Samarpan</span></div>
       <div class="row"><span class="t">Ireland</span><span class="m num">Frank Delaney · 2004</span></div>
       <div class="row"><span class="t">Diary of a Wimpy Kid: Cabin Fever</span><span class="m num">Jeff Kinney · 2016</span></div>
@@ -355,7 +457,8 @@ summary .sub{grid-column:1/-1; color:var(--muted); font-size:13.5px}
       <div class="row"><span class="t">Kafka on the Shore</span><span class="m num">Haruki Murakami · 2017</span><span class="take">Where I go to stop optimizing.</span></div>
       <div class="row"><span class="t">The Sage with Two Horns</span><span class="m num">Sudha Murthy</span></div>
       <div class="row"><span class="t">The Daughter from the Wishing Tree</span><span class="m num">Sudha Murthy</span></div>
-      <div class="cat-h"><span>Finance &amp; Economics</span><span class="c num">8</span></div>
+    </div></div>
+    <div class="shelf rv"><div class="cat">Finance &amp; Economics<span class="c num">8 titles</span></div><div class="rows">
       <div class="row"><span class="t">Foundations of Economic Analysis</span><span class="m num">Paul A. Samuelson · 2004</span></div>
       <div class="row"><span class="t">The Wealth of Nations</span><span class="m num">Adam Smith · 1776</span></div>
       <div class="row"><span class="t">The Complete Financial History of Berkshire Hathaway</span><span class="m num">Adam Smith</span></div>
@@ -364,7 +467,8 @@ summary .sub{grid-column:1/-1; color:var(--muted); font-size:13.5px}
       <div class="row"><span class="t">One Up On Wall Street</span><span class="m num">Peter Lynch · 1989</span></div>
       <div class="row"><span class="t">Poor Economics</span><span class="m num">Abhijit V. Banerjee, Esther Duflo · 2011</span></div>
       <div class="row"><span class="t">Futures and Options — Concepts and Application</span><span class="m num">T.R. Ramachandran</span></div>
-      <div class="cat-h"><span>Health &amp; Well-being</span><span class="c num">12</span></div>
+    </div></div>
+    <div class="shelf rv"><div class="cat">Health &amp; Well-being<span class="c num">12 titles</span></div><div class="rows">
       <div class="row"><span class="t">Ikigai</span><span class="m num">Héctor García, Francesc Miralles · 2016</span><span class="take">A quieter definition of a life well-built.</span></div>
       <div class="row"><span class="t">The Book of Ichigo Ichie</span><span class="m num">Hector Garcia, Francesc Miralles · 2019</span></div>
       <div class="row"><span class="t">The Little Book of Hygge</span><span class="m num">Meik Wiking · 2016</span></div>
@@ -377,9 +481,11 @@ summary .sub{grid-column:1/-1; color:var(--muted); font-size:13.5px}
       <div class="row"><span class="t">Pregnancy Notes</span><span class="m num">Dr. Rujuta Fule · 2017</span></div>
       <div class="row"><span class="t">The Complete Works of Swami Vivekananda</span><span class="m num">Swami Vivekananda · 1926</span></div>
       <div class="row"><span class="t">Why We Die</span><span class="m num">Venki Ramakrishnan · 2024</span></div>
-      <div class="cat-h"><span>History</span><span class="c num">1</span></div>
+    </div></div>
+    <div class="shelf rv"><div class="cat">History<span class="c num">1 title</span></div><div class="rows">
       <div class="row"><span class="t">The History of the World</span><span class="m num">Frank Welsh · 2011</span></div>
-      <div class="cat-h"><span>Philosophy</span><span class="c num">14</span></div>
+    </div></div>
+    <div class="shelf rv"><div class="cat">Philosophy<span class="c num">14 titles</span></div><div class="rows">
       <div class="row"><span class="t">Living with the Gods — On Belief &amp; Peoples</span><span class="m num"></span></div>
       <div class="row"><span class="t">The Idea of Justice</span><span class="m num">Amartya Sen · 2009</span></div>
       <div class="row"><span class="t">Justice: What&#x27;s the Right Thing to Do?</span><span class="m num">Michael J. Sandel</span></div>
@@ -394,7 +500,8 @@ summary .sub{grid-column:1/-1; color:var(--muted); font-size:13.5px}
       <div class="row"><span class="t">Meditations</span><span class="m num">Marcus Aurelius · 1626</span><span class="take">My most re-read book. The operating manual for a noisy mind.</span></div>
       <div class="row"><span class="t">From Socrates to Sartre: The Philosophic Quest</span><span class="m num">T.Z. Lavine</span></div>
       <div class="row"><span class="t">Seeking Wisdom</span><span class="m num">Peter Bevelin · 2003</span></div>
-      <div class="cat-h"><span>Psychology</span><span class="c num">9</span></div>
+    </div></div>
+    <div class="shelf rv"><div class="cat">Psychology<span class="c num">9 titles</span></div><div class="rows">
       <div class="row"><span class="t">Blink</span><span class="m num">Malcolm Gladwell · 2004</span></div>
       <div class="row"><span class="t">Predictably Irrational (Vol. 1)</span><span class="m num">Dan Ariely</span></div>
       <div class="row"><span class="t">Man and His Symbols</span><span class="m num">Carl G. Jung · 1964</span></div>
@@ -404,13 +511,15 @@ summary .sub{grid-column:1/-1; color:var(--muted); font-size:13.5px}
       <div class="row"><span class="t">Range: Why Generalists Triumph</span><span class="m num">David Epstein</span><span class="take">Why generalists win in complex systems. My career in one thesis.</span></div>
       <div class="row"><span class="t">Catch-22</span><span class="m num">Joseph Heller · 1961</span></div>
       <div class="row"><span class="t">The Interpretation of Dreams</span><span class="m num">Sigmund Freud · 1994</span></div>
-      <div class="cat-h"><span>Science</span><span class="c num">5</span></div>
+    </div></div>
+    <div class="shelf rv"><div class="cat">Science<span class="c num">5 titles</span></div><div class="rows">
       <div class="row"><span class="t">Homo Deus: A Brief History of Tomorrow</span><span class="m num">Yuval Noah Harari</span><span class="take">Where Sapiens points next — unsettling and essential.</span></div>
       <div class="row"><span class="t">On the Origin of Species</span><span class="m num">Charles Darwin · 1859</span></div>
       <div class="row"><span class="t">The Tao of Physics</span><span class="m num">Fritjof Capra · 1975</span></div>
       <div class="row"><span class="t">In Search of Schrödinger&#x27;s Cat</span><span class="m num">John Gribbin · 1984</span></div>
       <div class="row"><span class="t">A Brief History of Time</span><span class="m num">Stephen Hawking · 1988</span></div>
-      <div class="cat-h"><span>Self Help</span><span class="c num">33</span></div>
+    </div></div>
+    <div class="shelf rv"><div class="cat">Self Help<span class="c num">33 titles</span></div><div class="rows">
       <div class="row"><span class="t">The Communication Book: 44 Ideas for Better Conversations</span><span class="m num">Mikael Krogerus, Roman Tschäppeler</span></div>
       <div class="row"><span class="t">Lateral Thinking</span><span class="m num">Edward De Bono · 1970</span></div>
       <div class="row"><span class="t">Managing Life Creatively</span><span class="m num">Swami Sukhbodhananda</span></div>
@@ -444,148 +553,217 @@ summary .sub{grid-column:1/-1; color:var(--muted); font-size:13.5px}
       <div class="row"><span class="t">Predictably Irrational (Vol. 2)</span><span class="m num">Dan Ariely</span></div>
       <div class="row"><span class="t">DK — The Winner&#x27;s Manual: Achieving Excellence</span><span class="m num">DK</span></div>
       <div class="row"><span class="t">DK — The Winner&#x27;s Manual: Marketing Effectively</span><span class="m num">DK</span></div>
-      <div class="cat-h"><span>Supply Chain</span><span class="c num">5</span></div>
+    </div></div>
+    <div class="shelf rv"><div class="cat">Supply Chain<span class="c num">5 titles</span></div><div class="rows">
       <div class="row"><span class="t">Designing and Managing the Supply Chain</span><span class="m num">Simchi-Levi, Kaminsky, Simchi-Levi · 1999</span><span class="take">The textbook that actually maps to the job.</span></div>
       <div class="row"><span class="t">Business Forecasting and Demand Planning</span><span class="m num">Rakesh Singh</span></div>
       <div class="row"><span class="t">Introduction to Materials Management</span><span class="m num">Tony Arnold · 1991</span></div>
       <div class="row"><span class="t">Supply Chain Management</span><span class="m num">Sunil Chopra · 2000</span></div>
       <div class="row"><span class="t">Toyota Production System</span><span class="m num">Taiichi Ohno · 1988</span></div>
-      <div class="cat-h"><span>Reference</span><span class="c num">5</span></div>
+    </div></div>
+    <div class="shelf rv"><div class="cat">Reference<span class="c num">5 titles</span></div><div class="rows">
       <div class="row"><span class="t">Manorama Yearbook 2022</span><span class="m num"></span></div>
       <div class="row"><span class="t">Italy — Lonely Planet</span><span class="m num">2005</span></div>
       <div class="row"><span class="t">Ramayana Trail in Sri Lanka</span><span class="m num">Phalgun</span></div>
       <div class="row"><span class="t">The Official Guide for GMAT Review 2016</span><span class="m num">2015</span></div>
       <div class="row"><span class="t">GMAT Sentence Correction</span><span class="m num">2021</span></div>
-    </div>
-    <p class="book-note">deep dives: <a href="https://lavisahu.pages.dev/summaries/atomic-habits.html" target="_blank" rel="noopener" style="color:var(--accent)">atomic habits</a> · <a href="https://lavisahu.pages.dev/summaries/naval-almanack.html" target="_blank" rel="noopener" style="color:var(--accent)">the almanack of naval ravikant</a> · <a href="https://lavisahu.pages.dev/summaries/seeking-wisdom.html" target="_blank" rel="noopener" style="color:var(--accent)">seeking wisdom</a> — full interactive shelf at <a href="https://lavisahu.pages.dev/#/library" target="_blank" rel="noopener" style="color:var(--accent)">lavisahu.pages.dev</a></p>
+    </div></div>
+    <p class="book-note rv">deep dives: <a href="https://lavisahu.pages.dev/summaries/atomic-habits.html" target="_blank" rel="noopener">atomic habits</a> · <a href="https://lavisahu.pages.dev/summaries/naval-almanack.html" target="_blank" rel="noopener">the almanack of naval ravikant</a> · <a href="https://lavisahu.pages.dev/summaries/seeking-wisdom.html" target="_blank" rel="noopener">seeking wisdom</a><br>full interactive shelf with covers &amp; search → <a href="https://lavisahu.pages.dev/#/library" target="_blank" rel="noopener">lavisahu.pages.dev</a></p>
   </div>
 </section>
 
-<!-- 05 — travel -->
+<!-- ═══ TRV ═══ -->
 <section id="travel">
-  <div class="wrap">
-    <div class="sh"><span class="ix">05</span><span class="lb">Travel</span></div>
-    <div class="lead">
-      <p>Where I have been: 19 countries, 24 cities. Temples over resorts, local life over landmarks. Home base Bangalore, roots in Bhilai.</p>
-      <p class="places num">Madrid · Luxembourg · Paris · Zürich · Rome · Amsterdam · Berlin · Brussels · Prague · Vienna · Ljubljana · Budapest · Bangkok · Colombo · Singapore · Tokyo · Kuala Lumpur · Boston · New York · Washington DC · Indianapolis · Atlanta · <span class="home">Bangalore</span> · <span class="home">Bhilai</span></p>
+  <div class="frame">
+    <div class="sec-h rv"><span class="code">TRV</span><h2>Where I have been</h2></div>
+    <div class="lead rv">
+      <p>19 countries, 24 cities. Temples over resorts, local life over landmarks. Home base Bangalore, roots in Bhilai — every arc in the header above is a real route from home.</p>
     </div>
-    <div class="sh" style="margin-top:56px"><span class="ix">·</span><span class="lb">Field notes — what each place taught a planner</span></div>
-    <details>
-      <summary><span class="t">Japan — a country that runs on thinking about the next person</span><span class="m num">2023 · 3 min</span><span class="sub">Osaka · Kyoto · Tokyo · Mt. Fuji</span></summary>
-      <div class="essay">
-        <p>The train into Tokyo arrived at 9:14 and it was 9:14. Not roughly. The attendant on the platform bowed toward a carriage that hadn't fully emptied yet, to no one in particular. In a packed morning train, nobody spoke. I spend my working life trying to make systems behave like this, and here was a whole country that simply did.</p>
-        <p>You feel it first as service and slowly understand it as design. The konbini that has exactly what you need at 2am. The bins sorted into categories you didn't know existed. Queues that organize themselves without a rope or a sign. Every small choice seems to have asked the same question first: what happens to the next person who touches this?</p>
-        <p>Kyoto and Osaka are the range of it. Kyoto is restraint — temples, raked gravel, a tea house where a man has poured the same way for decades. Osaka is louder, a street of food stalls where the cook hands you something perfect off a roaring wok and barely looks up. The Japanese word is shokunin: mastery as devotion, not ambition. It is the most foreign idea I brought home and the one I think about most.</p>
-        <p>I won't pretend it's all warmth. The same precision that makes everything work can feel like pressure, and as an outsider you are cared for and held at a polite distance at the same time. The order has a cost, and the people inside it pay some of it.</p>
-        <p>Still, I came back to my planning desk with one sentence. Reliability is a culture before it is ever a metric. Japan had simply decided that consideration was worth building into the concrete, and then built it.</p>
-      </div>
-    </details>
-    <details>
-      <summary><span class="t">Thailand — the order you can't see, in a city that looks like chaos</span><span class="m num">2019 · 2026 · 3 min</span><span class="sub">Bangkok</span></summary>
-      <div class="essay">
-        <p>Bangkok at night is everything a planner is trained to fix. Wires knot overhead like a diagram nobody finished. Motorbikes thread gaps that shouldn't exist. A woman runs a food cart with one burner, a cleaver, and a memory, and the queue never stops. By every metric I'm paid to optimize, it should not work. It works better than half the systems I've designed.</p>
-        <p>If Japan is order imposed from the top, Bangkok is order that grows from the bottom. There's a phrase you hear — mai pen rai, never mind, it's fine — and it's not laziness. It's slack. The city carries enormous redundancy: a thousand vendors, no master plan, no central kitchen, and you eat better and cheaper than in any food court an MBA ever designed. That is emergence, and you can taste it.</p>
-        <p>Between the heat and the engines there are the temples — gold against the grey, a sudden quiet, people unhurried in a way I'm not. The warmth is real and it's everywhere, in the over-feeding, the directions you didn't ask for, the patience with a tired family finding its way.</p>
-        <p>I won't romanticize it. The same looseness that makes the city breathe also leaves people behind, and a hot afternoon stuck in traffic is not a metaphor for anything. But Bangkok taught me something my spreadsheets resist: not every good system is a designed system. Sometimes resilience is just slack you were too efficient to leave in.</p>
-        <p>I came home holding the controls a little less tightly.</p>
-      </div>
-    </details>
-    <details>
-      <summary><span class="t">Switzerland &amp; Europe — what reliability looks like, and the strange timing of seeing it</span><span class="m num">2020 · 4 min</span><span class="sub">Basel · Zürich · Amsterdam · Luxembourg · Belgium</span></summary>
-      <div class="essay">
-        <p>The Swiss train doors close with a sound like a decision. Basel runs the way you'd run a system if you optimized for one thing above all others: that it can be relied upon. The timetable is true. The water from the tap is a kind of moral statement. It is clean in a way that feels less like cleaning and more like a value.</p>
-        <p>I travel with a supply-chain brain, and Switzerland reads as trust turned into infrastructure. You don't verify the train, the institution, the price; you just rely on them, and that reliance is the whole product. It's expensive, and the expense is the point — you are paying for a guarantee.</p>
-        <p>What I didn't know, walking those quiet streets with my family, was the date. It was late February into March 2020. The news thickened a little every evening. Borders were about to close behind us; we just couldn't see it yet. There's a particular privilege, which I only understood later, in having one last open trip before the world stopped.</p>
-        <p>Honesty check: the same order can feel sterile. Reliability and warmth are not the same thing, and a society optimized for one can run a little short on the other. Some days Basel felt like a beautifully maintained machine I was visiting rather than a place that needed me there.</p>
-        <p>We flew home a few days before everything shut. The trip stopped being a holiday and became a marker — the last "before." I think about it whenever someone tells me a system is too reliable to be interesting. Reliability is what you miss the instant it's gone.</p>
-      </div>
-    </details>
-    <details>
-      <summary><span class="t">Singapore — a country run like a product</span><span class="m num">2022 · 3 min</span><span class="sub">Marina Bay · Gardens by the Bay · Sentosa · Johor Bahru</span></summary>
-      <div class="essay">
-        <p>At 7:45 the Supertrees at Gardens by the Bay light up, and they light up on schedule. The MRT arrives clean and cool. The airport is somewhere you'd visit even without a flight. Singapore is the closest thing I've seen to a country designed the way I'm taught to design a supply chain: top-down, optimized, and executed with a discipline most companies never reach.</p>
-        <p>For an operations person it's a kind of utopia. Housing, transport, even water — they recycle it into something called NEWater and they're proud of it — all planned with a clarity that would make any boardroom jealous. Nothing is left to drift. The greenery itself is engineered, and somehow that doesn't make it less beautiful.</p>
-        <p>The MBA in me wants to call it proof. Here is central planning, run by people who actually execute, producing outcomes that the messier democracies I know can't match. It is the cleanest argument for planning I've ever walked through.</p>
-        <p>And then the honesty. The tradeoff is spontaneity. Mess, dissent, the unplanned — they've been engineered down, and you can feel the absence of them the way you feel air conditioning: comfortable, and a little sealed. A day trip across to Johor Bahru is a jolt — louder, looser, more alive in the way only an unoptimized place can be.</p>
-        <p>I admire Singapore the way I admire a perfectly tuned system. Completely, and with one quiet question I can't put down: what got optimized away to make it this smooth?</p>
-      </div>
-    </details>
+    <p class="places rv num">Madrid · Luxembourg · Paris · Zürich · Rome · Amsterdam · Berlin · Brussels · Prague · Vienna · Ljubljana · Budapest · Bangkok · Colombo · Singapore · Tokyo · Kuala Lumpur · Boston · New York · Washington DC · Indianapolis · Atlanta · <span class="home">Bangalore</span> · <span class="home">Bhilai</span></p>
+    <div class="fieldnotes">
+      <details class="rv">
+        <summary><span class="t">Japan — a country that runs on thinking about the next person</span><span class="m num">2023 · 3 min</span><span class="sub">Osaka · Kyoto · Tokyo · Mt. Fuji</span></summary>
+        <div class="essay">
+          <p>The train into Tokyo arrived at 9:14 and it was 9:14. Not roughly. The attendant on the platform bowed toward a carriage that hadn't fully emptied yet, to no one in particular. In a packed morning train, nobody spoke. I spend my working life trying to make systems behave like this, and here was a whole country that simply did.</p>
+          <p>You feel it first as service and slowly understand it as design. The konbini that has exactly what you need at 2am. The bins sorted into categories you didn't know existed. Queues that organize themselves without a rope or a sign. Every small choice seems to have asked the same question first: what happens to the next person who touches this?</p>
+          <p>Kyoto and Osaka are the range of it. Kyoto is restraint — temples, raked gravel, a tea house where a man has poured the same way for decades. Osaka is louder, a street of food stalls where the cook hands you something perfect off a roaring wok and barely looks up. The Japanese word is shokunin: mastery as devotion, not ambition. It is the most foreign idea I brought home and the one I think about most.</p>
+          <p>I won't pretend it's all warmth. The same precision that makes everything work can feel like pressure, and as an outsider you are cared for and held at a polite distance at the same time. The order has a cost, and the people inside it pay some of it.</p>
+          <p>Still, I came back to my planning desk with one sentence. Reliability is a culture before it is ever a metric. Japan had simply decided that consideration was worth building into the concrete, and then built it.</p>
+        </div>
+      </details>
+      <details class="rv">
+        <summary><span class="t">Thailand — the order you can't see, in a city that looks like chaos</span><span class="m num">2019 · 2026 · 3 min</span><span class="sub">Bangkok</span></summary>
+        <div class="essay">
+          <p>Bangkok at night is everything a planner is trained to fix. Wires knot overhead like a diagram nobody finished. Motorbikes thread gaps that shouldn't exist. A woman runs a food cart with one burner, a cleaver, and a memory, and the queue never stops. By every metric I'm paid to optimize, it should not work. It works better than half the systems I've designed.</p>
+          <p>If Japan is order imposed from the top, Bangkok is order that grows from the bottom. There's a phrase you hear — mai pen rai, never mind, it's fine — and it's not laziness. It's slack. The city carries enormous redundancy: a thousand vendors, no master plan, no central kitchen, and you eat better and cheaper than in any food court an MBA ever designed. That is emergence, and you can taste it.</p>
+          <p>Between the heat and the engines there are the temples — gold against the grey, a sudden quiet, people unhurried in a way I'm not. The warmth is real and it's everywhere, in the over-feeding, the directions you didn't ask for, the patience with a tired family finding its way.</p>
+          <p>I won't romanticize it. The same looseness that makes the city breathe also leaves people behind, and a hot afternoon stuck in traffic is not a metaphor for anything. But Bangkok taught me something my spreadsheets resist: not every good system is a designed system. Sometimes resilience is just slack you were too efficient to leave in.</p>
+          <p>I came home holding the controls a little less tightly.</p>
+        </div>
+      </details>
+      <details class="rv">
+        <summary><span class="t">Switzerland &amp; Europe — what reliability looks like, and the strange timing of seeing it</span><span class="m num">2020 · 4 min</span><span class="sub">Basel · Zürich · Amsterdam · Luxembourg · Belgium</span></summary>
+        <div class="essay">
+          <p>The Swiss train doors close with a sound like a decision. Basel runs the way you'd run a system if you optimized for one thing above all others: that it can be relied upon. The timetable is true. The water from the tap is a kind of moral statement. It is clean in a way that feels less like cleaning and more like a value.</p>
+          <p>I travel with a supply-chain brain, and Switzerland reads as trust turned into infrastructure. You don't verify the train, the institution, the price; you just rely on them, and that reliance is the whole product. It's expensive, and the expense is the point — you are paying for a guarantee.</p>
+          <p>What I didn't know, walking those quiet streets with my family, was the date. It was late February into March 2020. The news thickened a little every evening. Borders were about to close behind us; we just couldn't see it yet. There's a particular privilege, which I only understood later, in having one last open trip before the world stopped.</p>
+          <p>Honesty check: the same order can feel sterile. Reliability and warmth are not the same thing, and a society optimized for one can run a little short on the other. Some days Basel felt like a beautifully maintained machine I was visiting rather than a place that needed me there.</p>
+          <p>We flew home a few days before everything shut. The trip stopped being a holiday and became a marker — the last "before." I think about it whenever someone tells me a system is too reliable to be interesting. Reliability is what you miss the instant it's gone.</p>
+        </div>
+      </details>
+      <details class="rv">
+        <summary><span class="t">Singapore — a country run like a product</span><span class="m num">2022 · 3 min</span><span class="sub">Marina Bay · Gardens by the Bay · Sentosa · Johor Bahru</span></summary>
+        <div class="essay">
+          <p>At 7:45 the Supertrees at Gardens by the Bay light up, and they light up on schedule. The MRT arrives clean and cool. The airport is somewhere you'd visit even without a flight. Singapore is the closest thing I've seen to a country designed the way I'm taught to design a supply chain: top-down, optimized, and executed with a discipline most companies never reach.</p>
+          <p>For an operations person it's a kind of utopia. Housing, transport, even water — they recycle it into something called NEWater and they're proud of it — all planned with a clarity that would make any boardroom jealous. Nothing is left to drift. The greenery itself is engineered, and somehow that doesn't make it less beautiful.</p>
+          <p>The MBA in me wants to call it proof. Here is central planning, run by people who actually execute, producing outcomes that the messier democracies I know can't match. It is the cleanest argument for planning I've ever walked through.</p>
+          <p>And then the honesty. The tradeoff is spontaneity. Mess, dissent, the unplanned — they've been engineered down, and you can feel the absence of them the way you feel air conditioning: comfortable, and a little sealed. A day trip across to Johor Bahru is a jolt — louder, looser, more alive in the way only an unoptimized place can be.</p>
+          <p>I admire Singapore the way I admire a perfectly tuned system. Completely, and with one quiet question I can't put down: what got optimized away to make it this smooth?</p>
+        </div>
+      </details>
+    </div>
   </div>
 </section>
 
-<!-- 06 — games -->
+<!-- ═══ GMS ═══ -->
 <section id="games">
-  <div class="wrap">
-    <div class="sh"><span class="ix">06</span><span class="lb">Games</span></div>
-    <div class="lead"><p>Strategy, off the clock. No luck, no shooters — economic engines and macro strategy. The same systems itch as the day job, after hours.</p></div>
-    <div class="cat-h"><span>On screen</span></div>
-    <div class="rows" style="margin-top:12px">
-      <div class="row"><span class="t">Dota 2</span><span class="m">MOBA · macro under fire</span><span class="sub">Supply-and-demand at 30 frames a second: read the map, manage the resource, commit at the right moment.</span></div>
-      <div class="row"><span class="t">Age of Empires II: Definitive Edition</span><span class="m">RTS · the original S&amp;OP loop</span><span class="sub">Booming an economy while fending off a feudal rush is just demand-supply balancing with trebuchets.</span></div>
+  <div class="frame">
+    <div class="sec-h rv"><span class="code">GMS</span><h2>Strategy, off the clock</h2></div>
+    <div class="lead rv"><p>No luck, no shooters — economic engines and macro strategy. The same systems itch as the day job, after hours.</p></div>
+    <div class="sub-h rv">On screen</div>
+    <div class="rows rv">
+      <div class="row"><span class="t">Dota 2</span><span class="m">MOBA · macro under fire</span><span class="take">Supply-and-demand at 30 frames a second: read the map, manage the resource, commit at the right moment.</span></div>
+      <div class="row"><span class="t">Age of Empires II: Definitive Edition</span><span class="m">RTS · the original S&amp;OP loop</span><span class="take">Booming an economy while fending off a feudal rush is just demand-supply balancing with trebuchets.</span></div>
     </div>
-    <div class="cat-h"><span>On the table</span></div>
-    <div class="rows" style="margin-top:12px">
-      <div class="row"><span class="t">Castles of Burgundy</span><span class="m num">2–4 players</span><span class="sub">Inventory placement disguised as a dukedom. My comfort game.</span></div>
-      <div class="row"><span class="t">Catan</span><span class="m num">3–4 players</span><span class="sub">Taught half my generation to negotiate. Still earns its table time.</span></div>
-      <div class="row"><span class="t">Splendor</span><span class="m num">2–4 players</span><span class="sub">A tempo game about compounding small advantages — engine-building, distilled.</span></div>
-      <div class="row"><span class="t">Puerto Rico</span><span class="m num">3–5 players</span><span class="sub">Worker placement with real tension; every role pick is an opportunity cost.</span></div>
-      <div class="row"><span class="t">Gizmos</span><span class="m num">1–4 players</span><span class="sub">Pure engine-building joy — chain the right gizmos and the machine plays itself.</span></div>
+    <div class="sub-h rv">On the table</div>
+    <div class="rows rv">
+      <div class="row"><span class="t">Castles of Burgundy</span><span class="m num">2–4 players</span><span class="take">Inventory placement disguised as a dukedom. My comfort game.</span></div>
+      <div class="row"><span class="t">Catan</span><span class="m num">3–4 players</span><span class="take">Taught half my generation to negotiate. Still earns its table time.</span></div>
+      <div class="row"><span class="t">Splendor</span><span class="m num">2–4 players</span><span class="take">A tempo game about compounding small advantages — engine-building, distilled.</span></div>
+      <div class="row"><span class="t">Puerto Rico</span><span class="m num">3–5 players</span><span class="take">Worker placement with real tension; every role pick is an opportunity cost.</span></div>
+      <div class="row"><span class="t">Gizmos</span><span class="m num">1–4 players</span><span class="take">Pure engine-building joy — chain the right gizmos and the machine plays itself.</span></div>
     </div>
-    <div class="blocks" style="margin-top:36px">
-      <div class="block"><div class="bt">On strategy — no luck, only systems</div><p>I don't play games to escape systems thinking — I play to indulge it. Dota 2 is supply-and-demand under fire. Age of Empires is the S&amp;OP loop I run at work, sped up and with trebuchets. The board games are quieter versions of the same itch. Add dice-luck and I lose interest fast.</p></div>
-      <div class="block"><div class="bt">On engines — the engine-builder's brain</div><p>A good Euro game is a constraint problem you actually want to solve. Castles of Burgundy is inventory placement; Splendor is tempo and compounding; Gizmos is a literal engine you build mid-game. Same muscle as network design at work — better decisions, better outcomes, no hiding behind a slide deck.</p></div>
+    <div class="gnote">
+      <div class="tile rv"><div class="tk">On strategy</div><h3>No luck, only systems</h3><p>I don't play games to escape systems thinking — I play to indulge it. Dota 2 is supply-and-demand under fire. Age of Empires is the S&amp;OP loop I run at work, sped up and with trebuchets. The board games are quieter versions of the same itch. Add dice-luck and I lose interest fast.</p></div>
+      <div class="tile rv"><div class="tk">On engines</div><h3>The engine-builder's brain</h3><p>A good Euro game is a constraint problem you actually want to solve. Castles of Burgundy is inventory placement; Splendor is tempo and compounding; Gizmos is a literal engine you build mid-game. Same muscle as network design at work — better decisions, better outcomes, no hiding behind a slide deck.</p></div>
     </div>
   </div>
 </section>
 
-<!-- 07 — background -->
+<!-- ═══ BKG ═══ -->
 <section id="background">
-  <div class="wrap">
-    <div class="sh"><span class="ix">07</span><span class="lb">Background</span></div>
-    <dl class="kv" style="margin-top:0">
-      <dt>current</dt><dd>EY India LLP — Director, Technology Consulting · supply chain transformation &amp; advanced planning</dd>
-      <dt>education</dt><dd>NITIE Mumbai — PG Diploma, IT &amp; Supply Chain · 2012<br>NIT Raipur — B.Tech · 2010</dd>
-      <dt>certified</dt><dd>SAP IBP · Kinaxis RapidResponse (Admin, Author &amp; Contributor L1) · CPIM · Six Sigma Green Belt · MDP, IIM Ahmedabad</dd>
-      <dt>languages</dt><dd>English — professional · Hindi — native · French — elementary</dd>
-      <dt>volunteer</dt><dd>EY Ripples — student mentoring, 14+ years</dd>
-      <dt>currently</dt><dd>reading Meditations, for the nth time · playing Castles of Burgundy + a late Dota queue · last stamp Bangkok, 2026 · building this site, in the open</dd>
+  <div class="frame">
+    <div class="sec-h rv"><span class="code">BKG</span><h2>Background</h2></div>
+    <dl class="spec rv">
+      <div class="spec-r"><dt>Current</dt><dd><b>EY India LLP</b> — Director, Technology Consulting · supply chain transformation &amp; advanced planning</dd></div>
+      <div class="spec-r"><dt>Education</dt><dd><b>NITIE Mumbai</b> — PG Diploma, IT &amp; Supply Chain · 2012 &nbsp;·&nbsp; <b>NIT Raipur</b> — B.Tech · 2010</dd></div>
+      <div class="spec-r"><dt>Certified</dt><dd>SAP IBP · Kinaxis RapidResponse (Admin, Author &amp; Contributor L1) · CPIM · Six Sigma Green Belt · MDP, IIM Ahmedabad</dd></div>
+      <div class="spec-r"><dt>Languages</dt><dd>English — professional · Hindi — native · French — elementary</dd></div>
+      <div class="spec-r"><dt>Volunteer</dt><dd>EY Ripples — student mentoring, 14+ years</dd></div>
+      <div class="spec-r"><dt>Currently</dt><dd>reading <b>Meditations</b>, for the nth time · playing <b>Castles of Burgundy</b> + a late Dota queue · last stamp <b>Bangkok, 2026</b> · building <b>this site</b>, in the open</dd></div>
     </dl>
-    <div class="blocks" style="margin-top:44px">
-      <div class="block"><div class="bt">Systems over symptoms</div><p>Fourteen years of supply-chain work taught me to see the system, not the firefight. I bring the same lens to everything — a reading habit, a board-game economy, a life.</p></div>
-      <div class="block"><div class="bt">Stoic, ambition intact</div><p>Marcus Aurelius in one hand, a roadmap in the other. I care less about the achievement treadmill and more about work that compounds and stays meaningful — without giving up the ambition.</p></div>
-      <div class="block"><div class="bt">Outlast the tool</div><p>Plain text over shiny apps. The durable system beats the clever hack. My second brain is markdown I will still own in twenty years.</p></div>
+    <div class="tiles">
+      <div class="tile rv"><div class="tk">Lens</div><h3>Systems over symptoms</h3><p>Fourteen years of supply-chain work taught me to see the system, not the firefight. I bring the same lens to everything — a reading habit, a board-game economy, a life.</p></div>
+      <div class="tile rv"><div class="tk">Temper</div><h3>Stoic, ambition intact</h3><p>Marcus Aurelius in one hand, a roadmap in the other. I care less about the achievement treadmill and more about work that compounds and stays meaningful — without giving up the ambition.</p></div>
+      <div class="tile rv"><div class="tk">Tools</div><h3>Outlast the tool</h3><p>Plain text over shiny apps. The durable system beats the clever hack. My second brain is markdown I will still own in twenty years.</p></div>
     </div>
   </div>
 </section>
 
-<!-- 08 — contact / footer -->
+<!-- ═══ CTC ═══ -->
 <footer id="contact">
-  <div class="wrap">
-    <div class="sh"><span class="ix">08</span><span class="lb">Contact</span></div>
-    <p class="foot-line">Plans that hold. Supply chains that don't blink.</p>
-    <p class="lead" style="color:var(--muted); margin-top:20px">Have a planning problem worth solving? Demand–supply balancing, an IBP/o9 rollout, an S&amp;OP that needs teeth — let's talk.</p>
-    <div class="foot-meta">
-      <a href="mailto:lavi.nitie@gmail.com">lavi.nitie@gmail.com</a>
+  <div class="frame">
+    <div class="sec-h rv"><span class="code">CTC</span><h2>Contact</h2></div>
+    <p class="foot-line rv">Plans that hold. Supply chains that <em>don't blink.</em></p>
+    <p class="foot-copy rv">Have a planning problem worth solving? Demand–supply balancing, an IBP/o9 rollout, an S&amp;OP that needs teeth — let's talk.</p>
+    <div class="foot-links rv">
+      <a class="primary" href="mailto:lavi.nitie@gmail.com">Get in touch</a>
       <a href="https://www.linkedin.com/in/lavi-sahu-6b075023" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="https://lavisahu.pages.dev" target="_blank" rel="noopener">live demos ↗</a>
+      <a href="https://lavisahu.pages.dev" target="_blank" rel="noopener">Live demos ↗</a>
     </div>
-    <p class="colophon num">Bangalore · India · <span id="yr"></span> — set in Inter &amp; IBM Plex Mono</p>
+    <p class="colophon num">BANGALORE · INDIA · <span id="yr"></span> — SET IN ARCHIVO, SOURCE SERIF 4 &amp; SPLINE SANS MONO</p>
   </div>
 </footer>
 
 <script>
 (function(){
-  var KEY='theme', root=document.documentElement, btn=document.getElementById('theme-btn');
+  var root=document.documentElement;
+  /* reveal is JS-driven; if the tab loads hidden, skip the choreography entirely
+     (hidden tabs never start CSS transitions — content must not depend on them) */
+  if(!document.hidden) root.classList.add('js');
+  /* theme */
+  var KEY='theme', btn=document.getElementById('theme-btn');
   var saved=localStorage.getItem(KEY);
   if(saved) root.setAttribute('data-theme', saved);
   btn.addEventListener('click', function(){
     var dark = root.getAttribute('data-theme')==='dark' ||
       (!root.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
     var next = dark ? 'light' : 'dark';
-    root.setAttribute('data-theme', next);
-    localStorage.setItem(KEY, next);
+    root.setAttribute('data-theme', next); localStorage.setItem(KEY, next);
+    draw(); /* redraw routes in new ink */
   });
   document.getElementById('yr').textContent = new Date().getFullYear();
+
+  /* scroll reveal */
+  var obs = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target);} });
+  }, {threshold:.08});
+  document.querySelectorAll('.rv').forEach(function(el,i){
+    el.style.transitionDelay = Math.min(i%6*60, 240)+'ms';
+    obs.observe(el);
+  });
+
+  /* ═══ hero route map — real cities, arcs from home ═══ */
+  var CITIES=[[-3.7,40.42],[6.13,49.61],[2.35,48.85],[8.55,47.37],[12.5,41.9],[4.9,52.37],[13.4,52.52],[4.35,50.85],[14.42,50.09],[16.37,48.21],[14.51,46.05],[19.04,47.5],[100.5,13.75],[79.86,6.93],[103.82,1.35],[139.69,35.68],[101.69,3.14],[-71.06,42.36],[-74.0,40.71],[-77.04,38.9],[-86.16,39.77],[-84.39,33.75],[81.38,21.19]];
+  var HOME=[77.59,12.97];
+  var cv=document.getElementById('routes'), ctx=cv.getContext('2d');
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var t0=null, DUR=2400;
+
+  function ink(a){ var s=getComputedStyle(root);
+    return {line:s.getPropertyValue('--faint').trim(), sig:s.getPropertyValue('--signal').trim()}; }
+  function proj(lon,lat,w,h){
+    var x=(lon+180)/360, y=(72-lat)/110;           /* frame lat 72N..-38S */
+    return [x*w*1.24-w*.12, y*h];                   /* slight overscan */
+  }
+  function draw(progress){
+    if(progress===undefined) progress=1;
+    var w=cv.clientWidth, h=cv.clientHeight, dpr=devicePixelRatio||1;
+    cv.width=w*dpr; cv.height=h*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,w,h);
+    var c=ink(), hp=proj(HOME[0],HOME[1],w,h);
+    ctx.lineWidth=1;
+    CITIES.forEach(function(city,i){
+      var p=proj(city[0],city[1],w,h);
+      var seg=Math.min(Math.max(progress*CITIES.length-i,0),1);
+      if(seg<=0) return;
+      var mx=(hp[0]+p[0])/2, my=Math.min(hp[1],p[1])-Math.abs(hp[0]-p[0])*.18-24;
+      ctx.strokeStyle=c.line; ctx.globalAlpha=.5;
+      ctx.beginPath();
+      if(seg>=1){ ctx.moveTo(hp[0],hp[1]); ctx.quadraticCurveTo(mx,my,p[0],p[1]); }
+      else{ /* partial draw along the curve */
+        ctx.moveTo(hp[0],hp[1]);
+        for(var t=0;t<=seg;t+=.04){
+          var it=1-t, x=it*it*hp[0]+2*it*t*mx+t*t*p[0], y=it*it*hp[1]+2*it*t*my+t*t*p[1];
+          ctx.lineTo(x,y);
+        }
+      }
+      ctx.stroke(); ctx.globalAlpha=1;
+      if(seg>=1){ ctx.fillStyle=c.line; ctx.beginPath(); ctx.arc(p[0],p[1],2,0,7); ctx.fill(); }
+    });
+    ctx.fillStyle=c.sig; ctx.beginPath(); ctx.arc(hp[0],hp[1],3.5,0,7); ctx.fill();
+    ctx.strokeStyle=c.sig; ctx.globalAlpha=.35;
+    ctx.beginPath(); ctx.arc(hp[0],hp[1],8,0,7); ctx.stroke(); ctx.globalAlpha=1;
+  }
+  function anim(ts){
+    if(!t0) t0=ts;
+    var p=Math.min((ts-t0)/DUR,1);
+    draw(1-Math.pow(1-p,3));
+    if(p<1) requestAnimationFrame(anim);
+  }
+  function start(){ if(reduce){draw(1);} else requestAnimationFrame(anim); }
+  addEventListener('resize', function(){ draw(1); });
+  start();
 })();
 </script>
 </body>
